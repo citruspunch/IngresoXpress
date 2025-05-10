@@ -1,5 +1,7 @@
 import { createClient } from '~/lib/supabase/server'
 import type { Route } from './+types/dashboard'
+import { Dashboard } from '~/dashboard'
+import SidebarMenu from '~/components/sidebarmenu'
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
   const { supabase } = createClient(request)
@@ -7,6 +9,6 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
   console.table(data)
 }
 
-const Component = () => <h1>Dashboard</h1>
+const Component = () => <SidebarMenu component={<Dashboard />} />
 
 export default Component
