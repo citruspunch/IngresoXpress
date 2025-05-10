@@ -1,4 +1,4 @@
-import DepartmentsListView from '~/features/departments/views/DepartmentsListView'
+import DepartmentsView from '~/features/departments/views/DepartmentsView'
 import { createClient } from '~/lib/supabase/server'
 import type { Route } from './+types/departments'
 
@@ -9,7 +9,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <DepartmentsListView departments={loaderData} />
+  <DepartmentsView departments={loaderData} />
 )
 
 export default Component
