@@ -77,7 +77,11 @@ export function SidebarMenu({ component }: { component: React.ReactNode }) {
           </div>
         </SidebarBody>
       </Sidebar>
-      {component}
+      <div className="flex flex-1">
+        <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-4xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
+          {component}
+        </div>
+      </div>
     </div>
   )
 }
@@ -100,9 +104,7 @@ export const Logo = () => {
 }
 export const LogoIcon = () => {
   return (
-    <div
-      className="relative z-20 flex mt-3 mb-1 items-center space-x-2 py-1 text-sm font-normal text-black"
-    >
+    <div className="relative z-20 flex mt-3 mb-1 items-center space-x-2 py-1 text-sm font-normal text-black">
       <div className="h-5 w-6 shrink-0 rounded-tl-lg rounded-tr-sm rounded-br-lg rounded-bl-sm bg-black dark:bg-white" />
     </div>
   )
