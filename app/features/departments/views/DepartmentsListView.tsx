@@ -28,7 +28,7 @@ const DepartmentsListView = ({
     <TableBody>
       {departments.map((department) => (
         <TableRow key={department.id}>
-          <TableCell className="font-medium">{department.code}</TableCell>
+          <TableCell className="font-medium">{department.id}</TableCell>
           <TableCell>{department.name}</TableCell>
         </TableRow>
       ))}
