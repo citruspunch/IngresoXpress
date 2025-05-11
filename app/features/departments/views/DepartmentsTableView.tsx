@@ -41,19 +41,20 @@ const columns: ColumnDef<Tables<'department'>>[] = [
     ),
   },
   {
-    accessorKey: 'code',
+    accessorKey: 'id',
+    header: 'Código',
+  },
+  {
+    accessorKey: 'name',
     header: ({ column }) => (
       <Button
         onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
         variant="ghost"
+        className="p-0 has-[>svg]:px-0"
       >
-        Código <SortVertical />
+        Nombre <SortVertical />
       </Button>
     ),
-  },
-  {
-    accessorKey: 'name',
-    header: 'Nombre',
   },
   {
     id: 'actions',
@@ -70,7 +71,7 @@ const columns: ColumnDef<Tables<'department'>>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(department.code)}
+              onClick={() => navigator.clipboard.writeText(department.id)}
             >
               <Copy />
               Copiar código
@@ -99,7 +100,7 @@ const DepartmentsTableView = ({ departments }: Props) => (
   <DataTable
     data={departments}
     columns={columns}
-    columnToFilterBy={{ key: 'code', label: 'Código' }}
+    columnToFilterBy={{ key: 'name', label: 'Nombre' }}
   />
 )
 
