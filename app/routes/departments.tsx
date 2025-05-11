@@ -10,7 +10,9 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <SidebarMenu component={<DepartmentsListView departments={loaderData} />} />
+  <SidebarMenu>
+    <DepartmentsListView departments={loaderData} />
+  </SidebarMenu>
 )
 
 export default Component
