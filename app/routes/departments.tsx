@@ -1,3 +1,4 @@
+import SidebarMenu from '~/components/sidebarmenu'
 import DepartmentsView from '~/features/departments/views/DepartmentsView'
 import { createClient } from '~/lib/supabase/server'
 import type { Route } from './+types/departments'
@@ -9,7 +10,7 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <DepartmentsView departments={loaderData} />
+  <SidebarMenu component={<DepartmentsView departments={loaderData} />} />
 )
 
 export default Component
