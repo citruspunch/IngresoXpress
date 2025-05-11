@@ -31,7 +31,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '~/components/ui/popover'
-import { CalendarIcon } from 'lucide-react'
+import {
+  BookX,
+  CalendarIcon,
+  Check,
+  ChevronsUpDown,
+  ClockArrowDown,
+  ClockArrowUp,
+} from 'lucide-react'
 import { cn } from '~/lib/utils'
 import { Calendar } from '~/components/ui/calendar'
 import { es } from 'react-day-picker/locale'
@@ -46,6 +53,19 @@ import {
   SelectValue,
 } from '~/components/ui/select'
 import type { AttendancePermissionViewProps } from './AttendancePermissionView'
+import {
+  Command,
+  CommandEmpty,
+  CommandGroup,
+  CommandInput,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+} from '~/components/ui/command'
+import React from 'react'
+import { appRoute } from '~/routes'
+import { useFetcher, useNavigate } from 'react-router'
+import type { Tables } from '~/lib/supabase/types'
 
 const Square = ({
   className,
@@ -87,14 +107,28 @@ const AttendancePermissionForm = ({
     { bg: 'bg-yellow-400/20', text: 'text-yellow-500' },
   ]
 
-  async function onSubmit(values: z.infer<typeof attendanceFormSchema>) {
-    try {
-      console.log(values)
-      toast.success('El permiso fue registrado correctamente')
-    } catch (error) {
-      console.error('Error submitting contact form', error)
-      toast.error('Error registrando el permiso. Intenta nuevamente')
-    }
+  const fetcher = useFetcher()
+
+  type FetcherData = {
+    employee: string
+    date: string
+    reason: string
+    type: 'absence' | 'late check in' | 'early check out'
+  }
+
+  const onSubmit = async (values: z.infer<typeof attendanceFormSchema>) => {
+    fetcher.submit(
+      {
+        employee: values.employee_id,
+        date: values.date.toISOString(),
+        reason: values.reason,
+        type: values.type,
+      } satisfies FetcherData,
+      {
+        method: 'post',
+        action: appRoute.permissions,
+      }
+    )
   }
 
   return (
@@ -117,54 +151,103 @@ const AttendancePermissionForm = ({
                   name="employee_id"
                   render={({ field }) => (
                     <FormItem className="grid gap-2 w-full">
-                      <FormLabel htmlFor="name">Nombre del Empleado</FormLabel>
+                      <FormLabel htmlFor="employee">
+                        Nombre del Empleado
+                      </FormLabel>
                       {!employees && (
                         <Input disabled placeholder="No hay empleados" />
                       )}
                       {employees && (
-                        <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
-                        >
-                          <FormControl>
-                            <SelectTrigger className="w-[280px]">
-                              <SelectValue placeholder="Selecciona a un empleado" />
-                            </SelectTrigger>
-                          </FormControl>
-                          <SelectContent>
-                            {Object.entries(employees).map(
-                              ([department, employeeList]) => (
-                                <SelectGroup key={department}>
-                                  <SelectLabel>{department}</SelectLabel>
-                                  {employeeList.map((employee, index) => {
-                                    const color = colors[index % colors.length]
-                                    return (
-                                      <SelectItem
-                                        value={employee.id}
-                                        key={employee.id}
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <FormControl>
+                              <Button
+                                variant="outline"
+                                role="combobox"
+                                aria-expanded={field.value ? true : false}
+                                className="w-[280px] justify-between"
+                              >
+                                {field.value
+                                  ? Object.values(employees)
+                                      .flat()
+                                      .find(
+                                        (employee) =>
+                                          employee.id === field.value
+                                      )!.name
+                                  : 'Selecciona un empleado'}
+                                <ChevronsUpDown className="ml-2 h-4 w-4 opacity-50" />
+                              </Button>
+                            </FormControl>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-[280px] p-0">
+                            <Command>
+                              <CommandInput
+                                placeholder="Buscar empleado..."
+                                className="h-9"
+                              />
+                              <CommandList>
+                                <CommandEmpty>
+                                  No se encontró ningún empleado.
+                                </CommandEmpty>
+                                {Object.entries(employees).map(
+                                  ([department, employeeList]) => (
+                                    <React.Fragment key={department}>
+                                      <CommandGroup
+                                        key={department}
+                                        heading={department}
                                       >
-                                        <Square
-                                          className={`${color.bg} ${color.text}`}
-                                        >
-                                          {employee.name[0].toUpperCase()}
-                                        </Square>
-                                        <span className="truncate">
-                                          {employee.name}
-                                        </span>
-                                      </SelectItem>
-                                    )
-                                  })}
-                                </SelectGroup>
-                              )
-                            )}
-                          </SelectContent>
-                        </Select>
+                                        {employeeList.map((employee) => (
+                                          <CommandItem
+                                            key={employee.id}
+                                            value={employee.name}
+                                            onSelect={() =>
+                                              field.onChange(employee.id)
+                                            }
+                                          >
+                                            <Square
+                                              className={`${
+                                                colors[
+                                                  employeeList.indexOf(
+                                                    employee
+                                                  ) % colors.length
+                                                ].bg
+                                              } ${
+                                                colors[
+                                                  employeeList.indexOf(
+                                                    employee
+                                                  ) % colors.length
+                                                ].text
+                                              }`}
+                                            >
+                                              {employee.name[0].toUpperCase()}
+                                            </Square>
+                                            <span className="truncate">
+                                              {employee.name}
+                                            </span>
+                                            <Check
+                                              className={cn(
+                                                'ml-auto h-4 w-4',
+                                                field.value === employee.id
+                                                  ? 'opacity-100'
+                                                  : 'opacity-0'
+                                              )}
+                                            />
+                                          </CommandItem>
+                                        ))}
+                                      </CommandGroup>
+                                      <CommandSeparator />
+                                    </React.Fragment>
+                                  )
+                                )}
+                              </CommandList>
+                            </Command>
+                          </PopoverContent>
+                        </Popover>
                       )}
                       <FormMessage />
                     </FormItem>
                   )}
                 />
-
 
                 {/* Date Field */}
                 <FormField
@@ -203,10 +286,6 @@ const AttendancePermissionForm = ({
                           />
                         </PopoverContent>
                       </Popover>
-                      {/* <FormDescription>
-                        Selecciona la fecha en la que se le otorgará <br/> el permiso
-                        al empleado
-                      </FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -224,19 +303,28 @@ const AttendancePermissionForm = ({
                         defaultValue={field.value}
                       >
                         <FormControl>
-                          <SelectTrigger className='w-[280px]'>
+                          <SelectTrigger className="w-[280px]">
                             <SelectValue placeholder="Selecciona el tipo de permiso" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
                           <SelectItem value={PassType.Absence}>
-                            Ausencia
+                            <div className="flex items-center gap-2">
+                              <BookX className="h-4 w-4 text-muted-foreground" />
+                              Ausencia
+                            </div>
                           </SelectItem>
                           <SelectItem value={PassType.Early}>
-                            Salida Temprana
+                            <div className="flex items-center gap-2">
+                              <ClockArrowUp className="h-4 w-4 text-muted-foreground" />
+                              Salida Temprana
+                            </div>
                           </SelectItem>
                           <SelectItem value={PassType.Late}>
-                            Llegada Tarde
+                            <div className="flex items-center gap-2">
+                              <ClockArrowDown className="h-4 w-4 text-muted-foreground" />
+                              Llegada Tarde
+                            </div>
                           </SelectItem>
                         </SelectContent>
                       </Select>
