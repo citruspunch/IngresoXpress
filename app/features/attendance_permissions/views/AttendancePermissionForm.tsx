@@ -1,36 +1,7 @@
 'use client'
 
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { toast } from 'sonner'
 import { format } from '@formkit/tempo'
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '~/components/ui/form'
-import { Button } from '~/components/ui/button'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card'
-import { Input } from '~/components/ui/input'
-import { Textarea } from '~/components/ui/textarea'
-import attendanceFormSchema from '../schemas/AttendanceSchema'
-import { PassType } from '~/lib/passTypes'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover'
+import { zodResolver } from '@hookform/resolvers/zod'
 import {
   BookX,
   CalendarIcon,
@@ -39,20 +10,39 @@ import {
   ClockArrowDown,
   ClockArrowUp,
 } from 'lucide-react'
-import { cn } from '~/lib/utils'
-import { Calendar } from '~/components/ui/calendar'
 import { es } from 'react-day-picker/locale'
-
+import { useForm } from 'react-hook-form'
+import { z } from 'zod'
+import { Button } from '~/components/ui/button'
+import { Calendar } from '~/components/ui/calendar'
 import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
-import type { AttendancePermissionViewProps } from './AttendancePermissionView'
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card'
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
+import { Input } from '~/components/ui/input'
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '~/components/ui/popover'
+import { Textarea } from '~/components/ui/textarea'
+import { PassType } from '~/lib/passTypes'
+import { cn } from '~/lib/utils'
+import attendanceFormSchema from '../schemas/AttendanceSchema'
+
+import React from 'react'
+import { useFetcher } from 'react-router'
 import {
   Command,
   CommandEmpty,
@@ -62,10 +52,20 @@ import {
   CommandList,
   CommandSeparator,
 } from '~/components/ui/command'
-import React from 'react'
-import { appRoute } from '~/routes'
-import { useFetcher, useNavigate } from 'react-router'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '~/components/ui/select'
 import type { Tables } from '~/lib/supabase/types'
+import type { AttendancePermissionViewProps } from './AttendancePermissionView'
+
+export type AttendancePermissionFormData = Pick<
+  Tables<'pass'>,
+  'date' | 'employee' | 'reason' | 'type'
+>
 
 const Square = ({
   className,
@@ -89,6 +89,8 @@ const Square = ({
 const AttendancePermissionForm = ({
   employees,
 }: AttendancePermissionViewProps) => {
+  const fetcher = useFetcher()
+
   const form = useForm<z.infer<typeof attendanceFormSchema>>({
     resolver: zodResolver(attendanceFormSchema),
     defaultValues: {
@@ -107,15 +109,6 @@ const AttendancePermissionForm = ({
     { bg: 'bg-yellow-400/20', text: 'text-yellow-500' },
   ]
 
-  const fetcher = useFetcher()
-
-  type FetcherData = {
-    employee: string
-    date: string
-    reason: string
-    type: 'absence' | 'late check in' | 'early check out'
-  }
-
   const onSubmit = async (values: z.infer<typeof attendanceFormSchema>) => {
     fetcher.submit(
       {
@@ -123,10 +116,10 @@ const AttendancePermissionForm = ({
         date: values.date.toISOString(),
         reason: values.reason,
         type: values.type,
-      } satisfies FetcherData,
+      } satisfies AttendancePermissionFormData,
       {
         method: 'post',
-        action: appRoute.permissions,
+        encType: 'application/json',
       }
     )
   }
