@@ -43,6 +43,7 @@ import attendanceFormSchema from '../schemas/AttendanceSchema'
 
 import React from 'react'
 import { useFetcher } from 'react-router'
+import Loader from '~/components/loader'
 import {
   Command,
   CommandEmpty,
@@ -345,9 +346,13 @@ const AttendancePermissionForm = ({
                     </FormItem>
                   )}
                 />
-
-                <Button type="submit" className="w-full">
-                  Otorgar Permiso
+                <Button
+                  type="submit"
+                  className="w-full"
+                  disabled={fetcher.state !== 'idle'}
+                >
+                  {fetcher.state !== 'idle' && <Loader />}
+                  Otorgar permiso
                 </Button>
               </div>
             </form>

@@ -10,6 +10,7 @@ import {
 
 import clsx from 'clsx'
 import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from 'remix-themes'
+import { Toaster } from 'sonner'
 import type { Route } from './+types/root'
 import './app.css'
 import { themeSessionResolver } from './sessions.server'
@@ -65,6 +66,7 @@ const _Layout = ({ children }: { children: React.ReactNode }) => {
       </head>
       <body>
         {children}
+        <Toaster richColors />
         <ScrollRestoration />
         <Scripts />
       </body>
