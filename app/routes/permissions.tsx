@@ -1,6 +1,6 @@
 import { redirect } from 'react-router'
 import { toast } from 'sonner'
-import SidebarMenu from '~/components/sidebarmenu'
+import SidebarMenu from '~/components/SidebarMenu'
 import type { AttendancePermissionFormData } from '~/features/attendance_permissions/views/AttendancePermissionForm'
 import AttendancePermissionView from '~/features/attendance_permissions/views/AttendancePermissionView'
 import { createClient } from '~/lib/supabase/server'
@@ -42,13 +42,20 @@ export const action = async ({ request }: Route.ActionArgs) => {
     type: type,
     reason: reason,
   })
-  if (error !== null) {
+  if (error !== null) console.error(error)
+  return error === null
+}
+
+export const clientAction = async ({
+  serverAction,
+}: Route.ClientActionArgs) => {
+  const wasSuccessful = await serverAction()
+  if (wasSuccessful) {
+    toast.success('El permiso fue registrado correctamente')
+    return redirect(appRoute.dashboard)
+  } else {
     toast.error('Error registrando el permiso. Intenta nuevamente')
-    console.error(error)
-    return
   }
-  toast.success('El permiso fue registrado correctamente')
-  return redirect(appRoute.dashboard)
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
