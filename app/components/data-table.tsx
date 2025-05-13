@@ -10,7 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import {
   Table,
   TableBody,
@@ -29,16 +29,18 @@ type DataTableProps<TData, TValue> = {
     label: string
     key: keyof TData
   }
+  children?: (selectedRowsIndexes: number[]) => ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   columnToFilterBy,
+  children: actions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [rowSelection, setRowSelection] = useState({})
+  const [rowSelection, setRowSelection] = useState<Record<number, boolean>>({})
 
   const table = useReactTable({
     data,
@@ -54,7 +56,7 @@ export function DataTable<TData, TValue>({
   })
 
   return (
-    <div>
+    <div className="min-h-0 max-h-full flex flex-col">
       <div className="flex items-center py-4 justify-between w-full">
         <Input
           placeholder={`Filtra por ${columnToFilterBy.label.toLowerCase()}...`}
@@ -75,7 +77,7 @@ export function DataTable<TData, TValue>({
           {table.getFilteredRowModel().rows.length} columna(s) seleccionada(s)
         </div>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border overflow-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -123,9 +125,9 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
+        {actions?.(Object.keys(rowSelection).map((value) => parseInt(value)))}
         <Button
           variant="outline"
-          size="sm"
           onClick={() => table.previousPage()}
           disabled={!table.getCanPreviousPage()}
         >
@@ -133,7 +135,6 @@ export function DataTable<TData, TValue>({
         </Button>
         <Button
           variant="outline"
-          size="sm"
           onClick={() => table.nextPage()}
           disabled={!table.getCanNextPage()}
         >

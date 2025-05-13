@@ -6,6 +6,8 @@ import {
   TrashBin2,
 } from '@solar-icons/react/ssr'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useFetcher } from 'react-router'
+import { toast } from 'sonner'
 import { DataTable } from '~/components/data-table'
 import { Button } from '~/components/ui/button'
 import { Checkbox } from '~/components/ui/checkbox'
@@ -18,6 +20,10 @@ import {
   DropdownMenuTrigger,
 } from '~/components/ui/dropdown-menu'
 import type { Tables } from '~/lib/supabase/types'
+import {
+  DepartmentsAction,
+  type DepartmentFormData,
+} from '~/routes/departments'
 
 const columns: ColumnDef<Tables<'department'>>[] = [
   {
@@ -60,6 +66,7 @@ const columns: ColumnDef<Tables<'department'>>[] = [
     id: 'actions',
     cell: ({ row }) => {
       const department = row.original
+      const fetcher = useFetcher()
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -71,7 +78,10 @@ const columns: ColumnDef<Tables<'department'>>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acciones</DropdownMenuLabel>
             <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(department.id)}
+              onClick={async () => {
+                await navigator.clipboard.writeText(department.id)
+                toast.info('Código copiado')
+              }}
             >
               <Copy />
               Copiar código
@@ -81,7 +91,18 @@ const columns: ColumnDef<Tables<'department'>>[] = [
               <Pen />
               Editar
             </DropdownMenuItem>
-            <DropdownMenuItem variant="destructive">
+            <DropdownMenuItem
+              variant="destructive"
+              onClick={() =>
+                fetcher.submit(
+                  {
+                    action: DepartmentsAction.delete,
+                    ids: [row.original.id],
+                  } satisfies DepartmentFormData,
+                  { method: 'post', encType: 'application/json' }
+                )
+              }
+            >
               <TrashBin2 />
               Eliminar
             </DropdownMenuItem>
@@ -96,12 +117,41 @@ type Props = {
   departments: Tables<'department'>[]
 }
 
-const DepartmentsTableView = ({ departments }: Props) => (
-  <DataTable
-    data={departments}
-    columns={columns}
-    columnToFilterBy={{ key: 'name', label: 'Nombre' }}
-  />
-)
+const DepartmentsTableView = ({ departments }: Props) => {
+  const fetcher = useFetcher()
+
+  const deleteDepartments = async (indexes: number[]) => {
+    const selectedDepartmentsIds = departments
+      .filter((_, index) => indexes.includes(index))
+      .map((element) => element.id)
+    fetcher.submit(
+      {
+        action: DepartmentsAction.delete,
+        ids: selectedDepartmentsIds,
+      } satisfies DepartmentFormData,
+      { method: 'post', encType: 'application/json' }
+    )
+  }
+
+  return (
+    <DataTable
+      data={departments}
+      columns={columns}
+      columnToFilterBy={{ key: 'name', label: 'Nombre' }}
+      key={departments.length}
+    >
+      {(selectedRowsIndexes) =>
+        selectedRowsIndexes.length !== 0 && (
+          <Button
+            variant="destructive"
+            onClick={() => deleteDepartments(selectedRowsIndexes)}
+          >
+            Eliminar filas seleccionadas
+          </Button>
+        )
+      }
+    </DataTable>
+  )
+}
 
 export default DepartmentsTableView
