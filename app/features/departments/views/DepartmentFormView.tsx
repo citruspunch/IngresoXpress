@@ -78,10 +78,13 @@ const DepartmentFormView = ({ children, departmentToEdit }: Props) => {
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Añadir departamento</DialogTitle>
+          <DialogTitle>
+            {departmentToEdit ? 'Actualizar' : 'Añadir'} departamento
+          </DialogTitle>
           <DialogDescription>
-            Ingresa el nombre del nuevo departamento. El código se generará
-            automáticamente.
+            {departmentToEdit
+              ? 'Cambia el nombre del departamento al nuevo valor.'
+              : 'Ingresa el nombre del nuevo departamento. El código se generará automáticamente.'}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -104,7 +107,13 @@ const DepartmentFormView = ({ children, departmentToEdit }: Props) => {
             />
             <Button type="submit" disabled={fetcher.state !== 'idle'}>
               {fetcher.state !== 'idle' && <Loader />}
-              {fetcher.state !== 'idle' ? 'Creando' : 'Crear'}
+              {fetcher.state !== 'idle'
+                ? departmentToEdit
+                  ? 'Actualizando'
+                  : 'Creando'
+                : departmentToEdit
+                ? 'Actualizar'
+                : 'Crear'}
             </Button>
           </form>
         </Form>
