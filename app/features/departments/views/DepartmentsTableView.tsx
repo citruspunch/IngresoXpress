@@ -24,6 +24,7 @@ import {
   DepartmentsAction,
   type DepartmentFormData,
 } from '~/routes/departments'
+import DepartmentFormView from './DepartmentFormView'
 
 const columns: ColumnDef<Tables<'department'>>[] = [
   {
@@ -87,10 +88,14 @@ const columns: ColumnDef<Tables<'department'>>[] = [
               Copiar código
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <Pen />
-              Editar
-            </DropdownMenuItem>
+
+            <DepartmentFormView departmentToEdit={row.original}>
+              <DropdownMenuItem onSelect={(event) => event.preventDefault()}>
+                <Pen />
+                Editar
+              </DropdownMenuItem>
+            </DepartmentFormView>
+
             <DropdownMenuItem
               variant="destructive"
               onClick={() =>

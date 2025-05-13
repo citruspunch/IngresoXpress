@@ -22,6 +22,7 @@ import {
   FormMessage,
 } from '~/components/ui/form'
 import { Input } from '~/components/ui/input'
+import type { Tables } from '~/lib/supabase/types'
 import {
   DepartmentsAction,
   type DepartmentFormData,
@@ -34,9 +35,17 @@ const formSchema = z.object({
     .min(2, 'Añade un nombre válido'),
 })
 
-const DepartmentFormView = ({ children }: { children: ReactNode }) => {
+type Props = {
+  children: ReactNode
+  departmentToEdit?: Tables<'department'>
+}
+
+const DepartmentFormView = ({ children, departmentToEdit }: Props) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: departmentToEdit?.name,
+    },
   })
 
   const fetcher = useFetcher()
@@ -45,10 +54,16 @@ const DepartmentFormView = ({ children }: { children: ReactNode }) => {
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
     await fetcher.submit(
-      {
-        name: values.name,
-        action: DepartmentsAction.create,
-      } satisfies DepartmentFormData,
+      departmentToEdit
+        ? ({
+            action: DepartmentsAction.edit,
+            id: departmentToEdit.id,
+            name: values.name,
+          } satisfies DepartmentFormData)
+        : ({
+            action: DepartmentsAction.create,
+            name: values.name,
+          } satisfies DepartmentFormData),
       {
         method: 'post',
         encType: 'application/json',
