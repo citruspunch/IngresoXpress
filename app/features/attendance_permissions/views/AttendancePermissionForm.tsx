@@ -62,35 +62,23 @@ import {
 } from '~/components/ui/select'
 import type { Tables } from '~/lib/supabase/types'
 import type { AttendancePermissionViewProps } from './AttendancePermissionView'
+import Square, { colors } from '~/components/Square'
+import { createClient } from '~/lib/supabase/client'
+import { ConfirmationDialog } from '~/components/ConfirmationDialog'
 
 export type AttendancePermissionFormData = Pick<
   Tables<'pass'>,
   'date' | 'employee' | 'reason' | 'type'
->
-
-const Square = ({
-  className,
-  children,
-}: {
-  className?: string
-  children: React.ReactNode
-}) => (
-  <span
-    data-square
-    className={cn(
-      'flex size-5 items-center justify-center rounded bg-muted text-xs font-medium text-muted-foreground',
-      className
-    )}
-    aria-hidden="true"
-  >
-    {children}
-  </span>
-)
+> & { action: 'create' | 'update' }
 
 const AttendancePermissionForm = ({
   employees,
 }: AttendancePermissionViewProps) => {
   const fetcher = useFetcher()
+  const [showConfirmation, setShowConfirmation] = React.useState(false)
+  const [currentValues, setCurrentValues] = React.useState<z.infer<
+    typeof attendanceFormSchema
+  > | null>(null)
 
   const form = useForm<z.infer<typeof attendanceFormSchema>>({
     resolver: zodResolver(attendanceFormSchema),
@@ -102,21 +90,61 @@ const AttendancePermissionForm = ({
     },
   })
 
-  const colors = [
-    { bg: 'bg-indigo-400/20', text: 'text-indigo-500' },
-    { bg: 'bg-purple-400/20', text: 'text-purple-500' },
-    { bg: 'bg-rose-400/20', text: 'text-rose-500' },
-    { bg: 'bg-green-400/20', text: 'text-green-500' },
-    { bg: 'bg-yellow-400/20', text: 'text-yellow-500' },
-  ]
+  
+
+  const checkAbsencePermission = async (employeeId: string, date: string) => {
+    const supabase = createClient()
+    const { error } = await supabase
+      .from('pass')
+      .select('*')
+      .eq('employee', employeeId)
+      .eq('date', date)
+      .eq('type', PassType.Absence)
+      .single()
+    if (error) return false
+    return true
+  }
+
+  const handleConfirm = () => {
+    if (currentValues) {
+      fetcher.submit(
+        {
+          employee: currentValues.employee_id,
+          date: currentValues.date.toISOString(),
+          reason: currentValues.reason,
+          type: currentValues.type,
+          action: 'update',
+        } satisfies AttendancePermissionFormData,
+        {
+          method: 'post',
+          encType: 'application/json',
+        }
+      )
+    }
+    setShowConfirmation(false) 
+  }
+
+  const handleCancel = () => {
+    setShowConfirmation(false) 
+  }
 
   const onSubmit = async (values: z.infer<typeof attendanceFormSchema>) => {
+    const isPermissionActive = await checkAbsencePermission(
+      values.employee_id,
+      values.date.toISOString()
+    )
+    if (isPermissionActive) {
+      setCurrentValues(values)
+      setShowConfirmation(true)
+      return
+    }
     fetcher.submit(
       {
         employee: values.employee_id,
         date: values.date.toISOString(),
         reason: values.reason,
         type: values.type,
+        action: 'create', 
       } satisfies AttendancePermissionFormData,
       {
         method: 'post',
@@ -127,6 +155,15 @@ const AttendancePermissionForm = ({
 
   return (
     <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
+      {showConfirmation && (
+        <ConfirmationDialog
+          title="Ya existe un permiso de ausencia"
+          description="Si haces click en continuar, el permiso se sobreescribirá"
+          actionLabel="Continuar"
+          onCancel={handleCancel}
+          onConfirm={handleConfirm}
+        />
+      )}
       <Card className="mx-auto max-w-md w-[500px]">
         <CardHeader>
           <CardTitle className="text-3xl">Permisos Laborales</CardTitle>

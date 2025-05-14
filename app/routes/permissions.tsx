@@ -4,46 +4,43 @@ import SidebarMenu from '~/components/SidebarMenu'
 import type { AttendancePermissionFormData } from '~/features/attendance_permissions/views/AttendancePermissionForm'
 import AttendancePermissionView from '~/features/attendance_permissions/views/AttendancePermissionView'
 import { createClient } from '~/lib/supabase/server'
-import type { Tables } from '~/lib/supabase/types'
 import { appRoute } from '~/routes'
 import type { Route } from './+types/permissions'
+import { fetchEmployeesWithDepartments } from '~/lib/utils'
 
 export const loader = async ({ request }: Route.LoaderArgs) => {
-  const { supabase } = createClient(request)
-  const { data, error } = await supabase
-    .from('employee')
-    .select('*, department(name)')
-    .order('department', { ascending: true })
-    .order('name', { ascending: true })
-
-  if (error !== null) return {}
-  const departmentEmployees: Record<string, Tables<'employee'>[]> = {}
-  data.forEach((employee) => {
-    if (employee.department) {
-      // If the department is not already in the object, create an empty array
-      if (!departmentEmployees[employee.department.name]) {
-        departmentEmployees[employee.department.name] = []
-      }
-      // Push the employee to the corresponding department array
-      departmentEmployees[employee.department.name].push(employee)
-    }
-  })
-  console.log('departmentEmployees', departmentEmployees)
-  return departmentEmployees
+  return fetchEmployeesWithDepartments(request)
 }
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const { supabase } = createClient(request)
-  const { date, employee, reason, type }: AttendancePermissionFormData =
+  const { date, employee, reason, type, action }: AttendancePermissionFormData =
     await request.clone().json()
-  const { error } = await supabase.from('pass').insert({
-    date: date,
-    employee: employee,
-    type: type,
-    reason: reason,
-  })
-  if (error !== null) console.error(error)
-  return error === null
+  switch (action) {
+    case 'create':
+      {
+        const { error } = await supabase.from('pass').insert({
+          date: date,
+          employee: employee,
+          type: type,
+          reason: reason,
+        })
+        if (error !== null) console.error(error)
+        return error === null
+      }
+    case 'update': {
+      const { error } = await supabase.from('pass').update({
+        date: date,
+        employee: employee,
+        type: type,
+        reason: reason,
+      })
+      if (error !== null) console.error(error)
+      return error === null
+    }
+    default:
+      throw new Error('Invalid action')
+  }
 }
 
 export const clientAction = async ({
