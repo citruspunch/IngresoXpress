@@ -25,16 +25,18 @@ import { Input } from './ui/input'
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  columnToFilterBy: {
+  columnToFilterBy?: {
     label: string
     key: keyof TData
   }
+  selectionActive?: boolean
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
   columnToFilterBy,
+  selectionActive = true,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -56,24 +58,25 @@ export function DataTable<TData, TValue>({
   return (
     <div>
       <div className="flex items-center py-4 justify-between w-full">
-        <Input
-          placeholder={`Filtra por ${columnToFilterBy.label.toLowerCase()}...`}
-          value={
-            (table
-              .getColumn(columnToFilterBy.key as string)
-              ?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table
-              .getColumn(columnToFilterBy.key as string)
-              ?.setFilterValue(event.target.value)
+        {columnToFilterBy && (
+          <Input
+            placeholder={`Filtra por ${columnToFilterBy.label.toLowerCase()}...`}
+            value={
+              (table
+                .getColumn(columnToFilterBy.key as string)
+                ?.getFilterValue() as string) ?? ''
+            }
+            onChange={(event) =>
+              table
+                .getColumn(columnToFilterBy.key as string)
+                ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
-        />
-        <div className="text-sm text-muted-foreground">
+        />)}
+        {selectionActive && (<div className="text-sm text-muted-foreground">
           {table.getFilteredSelectedRowModel().rows.length} de{' '}
           {table.getFilteredRowModel().rows.length} columna(s) seleccionada(s)
-        </div>
+        </div>)}
       </div>
       <div className="rounded-md border">
         <Table>
