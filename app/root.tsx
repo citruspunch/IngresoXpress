@@ -5,10 +5,15 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLoaderData,
 } from 'react-router'
 
+import clsx from 'clsx'
+import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from 'remix-themes'
+import { Toaster } from 'sonner'
 import type { Route } from './+types/root'
 import './app.css'
+import { themeSessionResolver } from './sessions.server'
 
 export const links: Route.LinksFunction = () => [
   { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
@@ -23,17 +28,45 @@ export const links: Route.LinksFunction = () => [
   },
 ]
 
+// Return the theme from the session storage using the loader
+export async function loader({ request }: Route.LoaderArgs) {
+  const { getTheme } = await themeSessionResolver(request)
+  return {
+    theme: getTheme(),
+  }
+}
+
+// `specifiedTheme` is the stored theme in the session storage.
+// `themeAction` is the action name that's used to change the theme in the session storage.
 export function Layout({ children }: { children: React.ReactNode }) {
+  const loaderData = useLoaderData<typeof loader>()
+
   return (
-    <html lang="en">
+    <ThemeProvider
+      specifiedTheme={loaderData.theme}
+      themeAction="/action/set-theme"
+    >
+      <_Layout children={children} />
+    </ThemeProvider>
+  )
+}
+
+const _Layout = ({ children }: { children: React.ReactNode }) => {
+  const loaderData = useLoaderData<typeof loader>()
+  const [theme] = useTheme()
+
+  return (
+    <html lang="en" className={clsx(theme)}>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <Meta />
+        <PreventFlashOnWrongTheme ssrTheme={Boolean(loaderData.theme)} />
         <Links />
       </head>
       <body>
         {children}
+        <Toaster richColors />
         <ScrollRestoration />
         <Scripts />
       </body>

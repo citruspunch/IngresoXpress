@@ -1,9 +1,9 @@
 'use client'
 import { useState } from 'react'
 import {
+  BookText,
   CalendarClock,
   LayoutDashboard,
-  SquareChartGantt,
   UserRoundCheck,
   UsersRound,
 } from 'lucide-react'
@@ -12,7 +12,7 @@ import { cn } from '~/lib/utils'
 import { Sidebar, SidebarBody, SidebarItem, SidebarLink } from './ui/sidebar'
 import { appRoute } from '~/routes'
 
-export function SidebarMenu({ component }: { component: React.ReactNode }) {
+export function SidebarMenu({ children }: { children: React.ReactNode }) {
   const links = [
     {
       label: 'Dashboard',
@@ -30,7 +30,7 @@ export function SidebarMenu({ component }: { component: React.ReactNode }) {
     },
     {
       label: 'Jornadas Laborales',
-      href: '#',
+      href: appRoute.workDays,
       icon: (
         <CalendarClock className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
@@ -42,6 +42,13 @@ export function SidebarMenu({ component }: { component: React.ReactNode }) {
         <UserRoundCheck className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
+    {
+      label: 'Reportes',
+      href: appRoute.reports,
+      icon: (
+        <BookText className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    }
   ]
   const [open, setOpen] = useState(false)
   return (
@@ -79,7 +86,7 @@ export function SidebarMenu({ component }: { component: React.ReactNode }) {
       </Sidebar>
       <div className="flex flex-1">
         <div className="flex h-full w-full flex-1 flex-col gap-2 rounded-tl-4xl border border-neutral-200 bg-white p-2 md:p-10 dark:border-neutral-700 dark:bg-neutral-900">
-          {component}
+          {children}
         </div>
       </div>
     </div>
