@@ -1,10 +1,10 @@
 import { format } from '@formkit/tempo'
+import { PDFDownloadLink } from '@react-pdf/renderer'
 import { SortVertical } from '@solar-icons/react/ssr'
 import type { ColumnDef } from '@tanstack/react-table'
-import html2canvas from 'html2canvas'
-import jsPDF from 'jspdf'
 import { FileDown, Repeat2 } from 'lucide-react'
 import type { ComponentProps } from 'react'
+import React, { useEffect, useState } from 'react'
 import { DataTable } from '~/components/data-table'
 import { Button } from '~/components/ui/button'
 import {
@@ -12,6 +12,8 @@ import {
   type EmployeeReport,
   type employeeReportHeader,
 } from '~/lib/utils'
+import { EmployeePDF } from './EmployeePDF'
+import { toast } from 'sonner'
 
 const columns: ColumnDef<EmployeeReport>[] = [
   {
@@ -47,12 +49,17 @@ const columns: ColumnDef<EmployeeReport>[] = [
     header: 'Horas Trabajadas',
   },
   {
-    accessorKey: 'permissions',
-    header: 'Permisos',
-  },
-  {
     accessorKey: 'observations',
     header: 'Observaciones',
+  },
+  {
+    accessorKey: 'permissions',
+    header: 'Permisos',
+    
+  },
+  {
+    accessorKey: 'reason',
+    header: 'Motivo de Permiso',
   },
 ]
 
@@ -89,9 +96,15 @@ const EmployeeReportView = ({
     employeeHeader.work_day.working_days
   ).join(', ')
 
+  const workDayFormat = `${employeeHeader.work_day.name} (${checkInTimeFormatted} - ${checkOutTimeFormatted})`
+
+  const [isClient, setIsClient] = useState(false)
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   return (
-    <div id="reporte" className="w-5xl mx-auto space-y-8" {...props}>
+    <div className="max-w-5xl mx-auto space-y-8" {...props}>
       <div className="flex justify-between items-end">
         <div className="space-y-4">
           <Repeat2 size={40} />
@@ -106,15 +119,41 @@ const EmployeeReportView = ({
             <br />
             {`Departamento: ${employeeHeader.department}`}
             <br />
-            {`Jornada Laboral: ${employeeHeader.work_day.name} (${checkInTimeFormatted} - ${checkOutTimeFormatted})`}
+            {`Jornada Laboral: ${workDayFormat}`}
             <br />
             {`Dias Laborales: ${workingDays}`}
           </p>
         </div>
-        <Button variant="outline">
-          <FileDown />
-          Descargar PDF
-        </Button>
+        {isClient && (
+          <PDFDownloadLink
+            document={
+              <EmployeePDF
+                data={flatData}
+                employeeName={employeeHeader.employee_name}
+                employeeId={employeeHeader.employee_id}
+                workDay={workDayFormat}
+                workingDays={workingDays}
+                dateRange={`Del ${fromDate} al ${toDate}`}
+                department={employeeHeader.department}
+                departmentId={employeeHeader.department_id}
+              />
+            }
+            fileName={`reporte_${employeeHeader.employee_name}.pdf`}
+          >
+            {({ loading }) =>
+              loading ? (
+                <Button variant="outline" disabled>
+                  Generando PDF...
+                </Button>
+              ) : (
+                <Button variant="outline" onClick={() => toast.success('PDF generado')}>
+                  <FileDown className="mr-2" />
+                  Descargar PDF
+                </Button>
+              )
+            }
+          </PDFDownloadLink>
+        )}
       </div>
       <DataTable data={flatData} columns={columns} selectionActive={false} />
     </div>
