@@ -57,7 +57,7 @@ export const convertToTime = (
 ): number => {
   const checkDate = new Date(dateInTimestamptz)
   // Set the check-in time to the same date as the entry as it is in timetz format
-  const extractedDate = dateInTimetz.split('-')[0] 
+  const extractedDate = dateInTimetz.split('-')[0]
   const [entryHours, entryMinutes, entrySeconds] = extractedDate.split(':')
   checkDate.setUTCHours(
     parseInt(entryHours),
@@ -119,7 +119,7 @@ export const getWorkingDaysInSpanish = (days: string[]): string[] => {
 
 export const getPassTypesInSpanish = (types: string): string => {
   const typesInSpanish: Record<string, string> = {
-    'absence': 'Ausencia',
+    absence: 'Ausencia',
     'late check in': 'Entrada Tarde',
     'early check out': 'Salida Temprana',
   }
@@ -136,3 +136,42 @@ export const getTotalTime = (timeInMs: number): string => {
 
   return `${hours}h ${minutes}m`
 }
+
+export const formatToTimetz = (time: string): string => {
+  return `${time}:00-06`
+}
+
+export const formatTime = (time: string): string => {
+  return time.split(':').slice(0, 2).join(':')
+}
+
+export const days = [
+  {
+    id: 'monday',
+    label: 'Lunes',
+  },
+  {
+    id: 'tuesday',
+    label: 'Martes',
+  },
+  {
+    id: 'wednesday',
+    label: 'Miércoles',
+  },
+  {
+    id: 'thursday',
+    label: 'Jueves',
+  },
+  {
+    id: 'friday',
+    label: 'Viernes',
+  },
+  {
+    id: 'saturday',
+    label: 'Sábado',
+  },
+  {
+    id: 'sunday',
+    label: 'Domingo',
+  },
+] as const
