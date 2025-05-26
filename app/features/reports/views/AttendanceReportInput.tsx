@@ -3,7 +3,7 @@ import { es } from 'date-fns/locale'
 import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useFetcher, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { Calendar } from '~/components/ui/calendar'
 import {

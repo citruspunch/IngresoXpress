@@ -13,7 +13,7 @@ const DepartmentsView = ({
   departments,
   ...props
 }: Props & ComponentProps<'div'>) => (
-  <div className="w-3xl mx-auto space-y-8 flex flex-col min-h-full" {...props}>
+  <div className="w-5xl mx-auto space-y-8 flex flex-col min-h-full" {...props}>
     <div className="flex justify-between items-end">
       <div className="space-y-4">
         <Buildings size={40} />
