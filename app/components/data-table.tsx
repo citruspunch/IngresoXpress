@@ -26,10 +26,11 @@ import { Input } from './ui/input'
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
-  columnToFilterBy: {
+  columnToFilterBy?: {
     label: string
     key: keyof TData
   }
+  selectionActive?: boolean
   children?: (selectedRowsIndexes: number[]) => ReactNode
 }
 
@@ -37,6 +38,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   columnToFilterBy,
+  selectionActive = true,
   children: actions,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
@@ -59,25 +61,26 @@ export function DataTable<TData, TValue>({
   return (
     <div className="min-h-0 max-h-full flex flex-col">
       <div className="flex items-center py-4 justify-between w-full">
-        <Input
-          placeholder={`Filtra por ${columnToFilterBy.label.toLowerCase()}...`}
-          value={
-            (table
-              .getColumn(columnToFilterBy.key as string)
-              ?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table
-              .getColumn(columnToFilterBy.key as string)
-              ?.setFilterValue(event.target.value)
+        {columnToFilterBy && (
+          <Input
+            placeholder={`Filtra por ${columnToFilterBy.label.toLowerCase()}...`}
+            value={
+              (table
+                .getColumn(columnToFilterBy.key as string)
+                ?.getFilterValue() as string) ?? ''
+            }
+            onChange={(event) =>
+              table
+                .getColumn(columnToFilterBy.key as string)
+                ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
-        />
-        <div className="text-sm text-muted-foreground flex items-center gap-1">
+        />)}
+        {selectionActive && (<div className="text-sm text-muted-foreground flex items-center gap-1">
           <NumberFlow value={table.getFilteredSelectedRowModel().rows.length} />{' '}
           de {table.getFilteredRowModel().rows.length} columna(s)
           seleccionada(s)
-        </div>
+        </div>)}
       </div>
       <div className="rounded-md border overflow-auto">
         <Table>

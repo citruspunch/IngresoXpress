@@ -15,7 +15,7 @@ const AttendancePermissionView = ({
   return (
     <>
       <h2 className="font-bold text-3xl mb-1">Otorgar permisos</h2>
-      <Separator className="mb-8" />
+      <Separator className="mb-1" />
       <AttendancePermissionForm employees={employees} />
     </>
   )

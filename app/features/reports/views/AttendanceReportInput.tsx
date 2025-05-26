@@ -1,49 +1,11 @@
-'use client'
-
-import { format } from '@formkit/tempo'
-import { zodResolver } from '@hookform/resolvers/zod'
-import {
-  BookX,
-  CalendarIcon,
-  Check,
-  ChevronsUpDown,
-  ClockArrowDown,
-  ClockArrowUp,
-} from 'lucide-react'
-import { es } from 'react-day-picker/locale'
+import { PopoverTrigger } from '@radix-ui/react-popover'
+import { es } from 'date-fns/locale'
+import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { z } from 'zod'
+import { useFetcher, useNavigate } from 'react-router'
 import { Button } from '~/components/ui/button'
 import { Calendar } from '~/components/ui/calendar'
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '~/components/ui/card'
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '~/components/ui/form'
-import { Input } from '~/components/ui/input'
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '~/components/ui/popover'
-import { Textarea } from '~/components/ui/textarea'
-import { PassType } from '~/lib/passTypes'
-import { cn } from '~/lib/utils'
-import attendanceFormSchema from '../schemas/AttendanceSchema'
-
-import React from 'react'
-import { useFetcher } from 'react-router'
-import Loader from '~/components/loader'
 import {
   Command,
   CommandEmpty,
@@ -54,122 +16,68 @@ import {
   CommandSeparator,
 } from '~/components/ui/command'
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '~/components/ui/select'
-import type { Tables } from '~/lib/supabase/types'
-import type { AttendancePermissionViewProps } from './AttendancePermissionView'
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '~/components/ui/form'
+import { Input } from '~/components/ui/input'
+import { Popover, PopoverContent } from '~/components/ui/popover'
+import { cn } from '~/lib/utils'
+import reportInputFormSchema from '../schemas/ReportInputSchema'
+import { zodResolver } from '@hookform/resolvers/zod'
+import type { z } from 'zod'
+import { format } from '@formkit/tempo'
+import type { AttendancePermissionViewProps } from '~/features/attendance_permissions/views/AttendancePermissionView'
+import Loader from '~/components/loader'
 import Square, { colors } from '~/components/Square'
-import { createClient } from '~/lib/supabase/client'
-import { ConfirmationDialog } from '~/components/ConfirmationDialog'
+import { appRoute } from '~/routes'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '~/components/ui/card'
 
-export type AttendancePermissionFormData = Pick<
-  Tables<'pass'>,
-  'date' | 'employee' | 'reason' | 'type'
-> & { action: 'create' | 'update' }
-
-const AttendancePermissionForm = ({
+const AttendanceReportInput = ({
   employees,
 }: AttendancePermissionViewProps) => {
-  const fetcher = useFetcher()
-  const [showConfirmation, setShowConfirmation] = React.useState(false)
-  const [currentValues, setCurrentValues] = React.useState<z.infer<
-    typeof attendanceFormSchema
-  > | null>(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const navigate = useNavigate()
 
-  const form = useForm<z.infer<typeof attendanceFormSchema>>({
-    resolver: zodResolver(attendanceFormSchema),
+  const form = useForm<z.infer<typeof reportInputFormSchema>>({
+    resolver: zodResolver(reportInputFormSchema),
     defaultValues: {
       employee_id: '',
-      date: new Date(),
-      reason: '',
-      type: undefined,
+      date_range: {
+        from: undefined,
+        to: undefined,
+      },
     },
   })
 
-  
-
-  const checkAbsencePermission = async (employeeId: string, date: string) => {
-    const supabase = createClient()
-    const { error } = await supabase
-      .from('pass')
-      .select('*')
-      .eq('employee', employeeId)
-      .eq('date', date)
-      .eq('type', PassType.Absence)
-      .single()
-    if (error) return false
-    return true
-  }
-
-  const handleConfirm = () => {
-    if (currentValues) {
-      fetcher.submit(
-        {
-          employee: currentValues.employee_id,
-          date: currentValues.date.toISOString(),
-          reason: currentValues.reason,
-          type: currentValues.type,
-          action: 'update',
-        } satisfies AttendancePermissionFormData,
-        {
-          method: 'post',
-          encType: 'application/json',
-        }
-      )
-    }
-    setShowConfirmation(false) 
-  }
-
-  const handleCancel = () => {
-    setShowConfirmation(false) 
-  }
-
-  const onSubmit = async (values: z.infer<typeof attendanceFormSchema>) => {
-    const isPermissionActive = await checkAbsencePermission(
-      values.employee_id,
-      values.date.toISOString()
+  const onSubmit = async (values: z.infer<typeof reportInputFormSchema>) => {
+    setIsLoading(true)
+    await navigate(
+      `${appRoute.reports}/${values.employee_id}/${JSON.stringify(
+        values.date_range
+      )}`
     )
-    if (isPermissionActive) {
-      setCurrentValues(values)
-      setShowConfirmation(true)
-      return
-    }
-    fetcher.submit(
-      {
-        employee: values.employee_id,
-        date: values.date.toISOString(),
-        reason: values.reason,
-        type: values.type,
-        action: 'create', 
-      } satisfies AttendancePermissionFormData,
-      {
-        method: 'post',
-        encType: 'application/json',
-      }
-    )
+    setIsLoading(false)
   }
 
   return (
     <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
-      {showConfirmation && (
-        <ConfirmationDialog
-          title="Ya existe un permiso de ausencia"
-          description="Si haces click en continuar, el permiso se sobreescribirá"
-          actionLabel="Continuar"
-          onCancel={handleCancel}
-          onConfirm={handleConfirm}
-        />
-      )}
-      <Card className="mx-auto max-w-md w-[500px]">
+      <Card className="mx-auto max-w-md  w-[500px]">
         <CardHeader>
-          <CardTitle className="text-3xl">Permisos Laborales</CardTitle>
+          <CardTitle className="text-3xl">Reportes Entrada y Salida</CardTitle>
           <CardDescription>
-            Completa el formulario para otorgar permisos de llegada tarde,
-            salida temprano o ausencia justificada.
+            Genera un reporte de entradas y salidas de un empleado en un rango
+            de fechas.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -283,7 +191,7 @@ const AttendancePermissionForm = ({
                 {/* Date Field */}
                 <FormField
                   control={form.control}
-                  name="date"
+                  name="date_range"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
                       <FormLabel>Fecha</FormLabel>
@@ -291,16 +199,24 @@ const AttendancePermissionForm = ({
                         <PopoverTrigger asChild>
                           <FormControl>
                             <Button
+                              id="date"
                               variant={'outline'}
                               className={cn(
                                 'pl-3 text-left font-normal w-[280px]',
-                                !field.value && 'text-muted-foreground'
+                                !field.value.from && 'text-muted-foreground'
                               )}
                             >
-                              {field.value ? (
-                                format(field.value, 'long', 'es')
+                              {field.value.from ? (
+                                field.value.to ? (
+                                  <>
+                                    {format(field.value.from, 'medium', 'es')} -{' '}
+                                    {format(field.value.to, 'medium', 'es')}
+                                  </>
+                                ) : (
+                                  format(field.value.from, 'long', 'es')
+                                )
                               ) : (
-                                <span>Selecciona una fecha</span>
+                                <span>Selecciona un intervalo de fechas</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -308,88 +224,30 @@ const AttendancePermissionForm = ({
                         </PopoverTrigger>
                         <PopoverContent className="w-auto p-0" align="start">
                           <Calendar
-                            mode="single"
-                            selected={field.value}
+                            mode="range"
+                            defaultMonth={field.value.from}
+                            selected={{
+                              from: field.value.from!,
+                              to: field.value.to,
+                            }}
                             onSelect={field.onChange}
-                            disabled={(date) => date < new Date('1900-01-01')}
                             autoFocus
+                            numberOfMonths={1}
                             locale={es}
                           />
                         </PopoverContent>
                       </Popover>
+                      <FormDescription>
+                        Selecciona el intervalo de fechas en las que quieres
+                        generar el reporte.
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
 
-                {/* Email Field */}
-                <FormField
-                  control={form.control}
-                  name="type"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Tipo de Permiso</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger className="w-[280px]">
-                            <SelectValue placeholder="Selecciona el tipo de permiso" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value={PassType.Absence}>
-                            <div className="flex items-center gap-2">
-                              <BookX className="h-4 w-4 text-muted-foreground" />
-                              Ausencia
-                            </div>
-                          </SelectItem>
-                          <SelectItem value={PassType.Early}>
-                            <div className="flex items-center gap-2">
-                              <ClockArrowUp className="h-4 w-4 text-muted-foreground" />
-                              Salida Temprana
-                            </div>
-                          </SelectItem>
-                          <SelectItem value={PassType.Late}>
-                            <div className="flex items-center gap-2">
-                              <ClockArrowDown className="h-4 w-4 text-muted-foreground" />
-                              Llegada Tarde
-                            </div>
-                          </SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                {/* Message Field */}
-                <FormField
-                  control={form.control}
-                  name="reason"
-                  render={({ field }) => (
-                    <FormItem className="grid gap-2">
-                      <FormLabel htmlFor="motivo">Motivo</FormLabel>
-                      <FormControl>
-                        <Textarea
-                          id="motivo"
-                          placeholder="Escribe el motivo del permiso"
-                          autoComplete="off"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button
-                  type="submit"
-                  className="w-full"
-                  disabled={fetcher.state !== 'idle'}
-                >
-                  {fetcher.state !== 'idle' && <Loader />}
-                  Otorgar permiso
+                <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+                  {isLoading ? <Loader /> : 'Generar Reporte'}
                 </Button>
               </div>
             </form>
@@ -400,4 +258,4 @@ const AttendancePermissionForm = ({
   )
 }
 
-export default AttendancePermissionForm
+export default AttendanceReportInput

@@ -1,15 +1,21 @@
-import { type RouteConfig, route } from '@react-router/dev/routes'
+import { type RouteConfig, index, route } from '@react-router/dev/routes'
 
 export const appRoute = {
   dashboard: '/dashboard',
   departments: '/departments',
   permissions: '/permissions',
   employees: '/employees',
+  reports: '/reports',
+  workDays: '/work-days',
 }
 
 export default [
+  index('routes/home.tsx'),
   route(appRoute.dashboard, 'routes/dashboard.tsx'),
   route(appRoute.departments, 'routes/departments.tsx'),
   route(appRoute.permissions, 'routes/permissions.tsx'),
   route(appRoute.employees, 'routes/employees.tsx'),
+  route(appRoute.reports, 'routes/reports.tsx'),
+  route(`${appRoute.reports}/:employee_id/:date_range`, 'routes/employeeReportView.tsx'),
+  route(appRoute.workDays, 'routes/workDays.tsx'),
 ] satisfies RouteConfig
