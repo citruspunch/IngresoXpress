@@ -2,7 +2,6 @@ import { clsx, type ClassValue } from 'clsx'
 import { twMerge } from 'tailwind-merge'
 import type { Tables } from './supabase/types'
 import { createClient } from './supabase/server'
-import type { Table } from '@tanstack/react-table'
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
@@ -47,7 +46,8 @@ export type EmployeeReport = {
   late_check_in: string
   early_check_out: string
   total_work_time: string
-  permissions: Tables<'pass'>[]
+  permissions: string
+  reason: string
   observations: string
 }
 
@@ -57,9 +57,9 @@ export const convertToTime = (
 ): number => {
   const checkDate = new Date(dateInTimestamptz)
   // Set the check-in time to the same date as the entry as it is in timetz format
-  const extractedDate = dateInTimetz.split('+')[0] // Remove time zone
+  const extractedDate = dateInTimetz.split('-')[0] 
   const [entryHours, entryMinutes, entrySeconds] = extractedDate.split(':')
-  checkDate.setHours(
+  checkDate.setUTCHours(
     parseInt(entryHours),
     parseInt(entryMinutes),
     parseInt(entrySeconds)
@@ -115,4 +115,24 @@ export const getWorkingDaysInSpanish = (days: string[]): string[] => {
     sunday: 'Domingo',
   }
   return days.map((day) => daysInSpanish[day])
+}
+
+export const getPassTypesInSpanish = (types: string): string => {
+  const typesInSpanish: Record<string, string> = {
+    'absence': 'Ausencia',
+    'late check in': 'Entrada Tarde',
+    'early check out': 'Salida Temprana',
+  }
+  return typesInSpanish[types] || types
+}
+
+export const getTotalTime = (timeInMs: number): string => {
+  const totalMinutes = Math.floor(timeInMs / (1000 * 60))
+  const hours = Math.floor(totalMinutes / 60)
+  const minutes = totalMinutes % 60
+  if (hours === 0 && minutes === 0) return '0 minutos'
+  if (hours === 0) return `${minutes} minutos`
+  if (minutes === 0) return `${hours} horas`
+
+  return `${hours}h ${minutes}m`
 }
