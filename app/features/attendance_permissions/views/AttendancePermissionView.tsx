@@ -1,11 +1,11 @@
+import { Separator } from '@radix-ui/react-separator'
 import type { ComponentProps } from 'react'
-import { Separator } from '~/components/ui/separator'
+import SidebarMenu from '~/components/sidebarmenu'
 import type { Table } from '~/components/ui/table'
 import type { Tables } from '~/lib/supabase/types'
-import AttendancePermissionForm from './AttendancePermissionForm'
 
-export type AttendancePermissionViewProps = {
-  employees: Record<string, Tables<'employee'>[]>
+type AttendancePermissionViewProps = {
+  employees: Tables<'employee'>[]
 }
 
 const AttendancePermissionView = ({
@@ -15,8 +15,7 @@ const AttendancePermissionView = ({
   return (
     <>
       <h2 className="font-bold text-3xl mb-1">Otorgar permisos</h2>
-      <Separator className="mb-1" />
-      <AttendancePermissionForm employees={employees} />
+      <Separator className="mb-8" />
     </>
   )
 }

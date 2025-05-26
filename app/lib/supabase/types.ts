@@ -36,16 +36,19 @@ export type Database = {
     Tables: {
       department: {
         Row: {
+          code: string
           created_at: string
           id: string
           name: string
         }
         Insert: {
+          code: string
           created_at?: string
           id?: string
           name: string
         }
         Update: {
+          code?: string
           created_at?: string
           id?: string
           name?: string
@@ -54,6 +57,7 @@ export type Database = {
       }
       employee: {
         Row: {
+          code: string
           created_at: string
           department: string
           id: string
@@ -61,6 +65,7 @@ export type Database = {
           work_day: string
         }
         Insert: {
+          code: string
           created_at?: string
           department?: string
           id?: string
@@ -68,6 +73,7 @@ export type Database = {
           work_day: string
         }
         Update: {
+          code?: string
           created_at?: string
           department?: string
           id?: string
@@ -76,19 +82,19 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: 'employee_department_fkey'
-            columns: ['department']
+            foreignKeyName: "employee_department_fkey"
+            columns: ["department"]
             isOneToOne: false
-            referencedRelation: 'department'
-            referencedColumns: ['id']
+            referencedRelation: "department"
+            referencedColumns: ["id"]
           },
           {
-            foreignKeyName: 'employee_work_day_fkey'
-            columns: ['work_day']
+            foreignKeyName: "employee_work_day_fkey"
+            columns: ["work_day"]
             isOneToOne: false
-            referencedRelation: 'work_day'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "work_day"
+            referencedColumns: ["id"]
+          },
         ]
       }
       entry: {
@@ -96,28 +102,28 @@ export type Database = {
           created_at: string
           employee: string
           id: string
-          type: Database['public']['Enums']['entry type']
+          type: Database["public"]["Enums"]["entry type"]
         }
         Insert: {
           created_at: string
           employee: string
           id?: string
-          type: Database['public']['Enums']['entry type']
+          type: Database["public"]["Enums"]["entry type"]
         }
         Update: {
           created_at?: string
           employee?: string
           id?: string
-          type?: Database['public']['Enums']['entry type']
+          type?: Database["public"]["Enums"]["entry type"]
         }
         Relationships: [
           {
-            foreignKeyName: 'entry_employee_fkey'
-            columns: ['employee']
+            foreignKeyName: "entry_employee_fkey"
+            columns: ["employee"]
             isOneToOne: false
-            referencedRelation: 'employee'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "employee"
+            referencedColumns: ["id"]
+          },
         ]
       }
       pass: {
@@ -127,7 +133,7 @@ export type Database = {
           employee: string
           id: string
           reason: string
-          type: Database['public']['Enums']['pass type']
+          type: Database["public"]["Enums"]["pass type"]
         }
         Insert: {
           created_at?: string
@@ -135,7 +141,7 @@ export type Database = {
           employee: string
           id?: string
           reason?: string
-          type: Database['public']['Enums']['pass type']
+          type: Database["public"]["Enums"]["pass type"]
         }
         Update: {
           created_at?: string
@@ -143,42 +149,45 @@ export type Database = {
           employee?: string
           id?: string
           reason?: string
-          type?: Database['public']['Enums']['pass type']
+          type?: Database["public"]["Enums"]["pass type"]
         }
         Relationships: [
           {
-            foreignKeyName: 'pass_employee_fkey'
-            columns: ['employee']
+            foreignKeyName: "pass_employee_fkey"
+            columns: ["employee"]
             isOneToOne: false
-            referencedRelation: 'employee'
-            referencedColumns: ['id']
-          }
+            referencedRelation: "employee"
+            referencedColumns: ["id"]
+          },
         ]
       }
       work_day: {
         Row: {
           check_in_time: string
           check_out_time: string
+          code: string
           created_at: string
           id: string
           name: string
-          working_days: Database['public']['Enums']['day'][]
+          working_days: Database["public"]["Enums"]["day"][]
         }
         Insert: {
           check_in_time: string
           check_out_time: string
+          code: string
           created_at?: string
           id?: string
           name: string
-          working_days: Database['public']['Enums']['day'][]
+          working_days: Database["public"]["Enums"]["day"][]
         }
         Update: {
           check_in_time?: string
           check_out_time?: string
+          code?: string
           created_at?: string
           id?: string
           name?: string
-          working_days?: Database['public']['Enums']['day'][]
+          working_days?: Database["public"]["Enums"]["day"][]
         }
         Relationships: []
       }
@@ -191,15 +200,15 @@ export type Database = {
     }
     Enums: {
       day:
-        | 'monday'
-        | 'tuesday'
-        | 'wednesday'
-        | 'thursday'
-        | 'friday'
-        | 'saturday'
-        | 'sunday'
-      'entry type': 'check in' | 'check out'
-      'pass type': 'absence' | 'late check in' | 'early check out'
+        | "monday"
+        | "tuesday"
+        | "wednesday"
+        | "thursday"
+        | "friday"
+        | "saturday"
+        | "sunday"
+      "entry type": "check in" | "check out"
+      "pass type": "absence" | "late check in" | "early check out"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -207,110 +216,110 @@ export type Database = {
   }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, 'public'>]
+type DefaultSchema = Database[Extract<keyof Database, "public">]
 
 export type Tables<
   DefaultSchemaTableNameOrOptions extends
-    | keyof (DefaultSchema['Tables'] & DefaultSchema['Views'])
+    | keyof (DefaultSchema["Tables"] & DefaultSchema["Views"])
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-        Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])
-    : never = never
+    ? keyof (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+        Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'] &
-      Database[DefaultSchemaTableNameOrOptions['schema']]['Views'])[TableName] extends {
+  ? (Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
+      Database[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
       Row: infer R
     }
     ? R
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])
-  ? (DefaultSchema['Tables'] &
-      DefaultSchema['Views'])[DefaultSchemaTableNameOrOptions] extends {
-      Row: infer R
-    }
-    ? R
+  : DefaultSchemaTableNameOrOptions extends keyof (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])
+    ? (DefaultSchema["Tables"] &
+        DefaultSchema["Views"])[DefaultSchemaTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
     : never
-  : never
 
 export type TablesInsert<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Insert: infer I
     }
     ? I
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Insert: infer I
-    }
-    ? I
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Insert: infer I
+      }
+      ? I
+      : never
     : never
-  : never
 
 export type TablesUpdate<
   DefaultSchemaTableNameOrOptions extends
-    | keyof DefaultSchema['Tables']
+    | keyof DefaultSchema["Tables"]
     | { schema: keyof Database },
   TableName extends DefaultSchemaTableNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[DefaultSchemaTableNameOrOptions['schema']]['Tables']
-    : never = never
+    ? keyof Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"]
+    : never = never,
 > = DefaultSchemaTableNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaTableNameOrOptions['schema']]['Tables'][TableName] extends {
+  ? Database[DefaultSchemaTableNameOrOptions["schema"]]["Tables"][TableName] extends {
       Update: infer U
     }
     ? U
     : never
-  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema['Tables']
-  ? DefaultSchema['Tables'][DefaultSchemaTableNameOrOptions] extends {
-      Update: infer U
-    }
-    ? U
+  : DefaultSchemaTableNameOrOptions extends keyof DefaultSchema["Tables"]
+    ? DefaultSchema["Tables"][DefaultSchemaTableNameOrOptions] extends {
+        Update: infer U
+      }
+      ? U
+      : never
     : never
-  : never
 
 export type Enums<
   DefaultSchemaEnumNameOrOptions extends
-    | keyof DefaultSchema['Enums']
+    | keyof DefaultSchema["Enums"]
     | { schema: keyof Database },
   EnumName extends DefaultSchemaEnumNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums']
-    : never = never
+    ? keyof Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"]
+    : never = never,
 > = DefaultSchemaEnumNameOrOptions extends { schema: keyof Database }
-  ? Database[DefaultSchemaEnumNameOrOptions['schema']]['Enums'][EnumName]
-  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema['Enums']
-  ? DefaultSchema['Enums'][DefaultSchemaEnumNameOrOptions]
-  : never
+  ? Database[DefaultSchemaEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : DefaultSchemaEnumNameOrOptions extends keyof DefaultSchema["Enums"]
+    ? DefaultSchema["Enums"][DefaultSchemaEnumNameOrOptions]
+    : never
 
 export type CompositeTypes<
   PublicCompositeTypeNameOrOptions extends
-    | keyof DefaultSchema['CompositeTypes']
+    | keyof DefaultSchema["CompositeTypes"]
     | { schema: keyof Database },
   CompositeTypeName extends PublicCompositeTypeNameOrOptions extends {
     schema: keyof Database
   }
-    ? keyof Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes']
-    : never = never
+    ? keyof Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"]
+    : never = never,
 > = PublicCompositeTypeNameOrOptions extends { schema: keyof Database }
-  ? Database[PublicCompositeTypeNameOrOptions['schema']]['CompositeTypes'][CompositeTypeName]
-  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema['CompositeTypes']
-  ? DefaultSchema['CompositeTypes'][PublicCompositeTypeNameOrOptions]
-  : never
+  ? Database[PublicCompositeTypeNameOrOptions["schema"]]["CompositeTypes"][CompositeTypeName]
+  : PublicCompositeTypeNameOrOptions extends keyof DefaultSchema["CompositeTypes"]
+    ? DefaultSchema["CompositeTypes"][PublicCompositeTypeNameOrOptions]
+    : never
 
 export const Constants = {
   graphql_public: {
@@ -319,16 +328,16 @@ export const Constants = {
   public: {
     Enums: {
       day: [
-        'monday',
-        'tuesday',
-        'wednesday',
-        'thursday',
-        'friday',
-        'saturday',
-        'sunday',
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday",
       ],
-      'entry type': ['check in', 'check out'],
-      'pass type': ['absence', 'late check in', 'early check out'],
+      "entry type": ["check in", "check out"],
+      "pass type": ["absence", "late check in", "early check out"],
     },
   },
 } as const
