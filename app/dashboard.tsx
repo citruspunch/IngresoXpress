@@ -126,7 +126,7 @@ const features = [
 export function Dashboard() {
   return (
     <>
-      <TypingAnimation className="text-center mt-5 text-4xl font-semibold px-5">{`¡Hola! Bienvenido a IngresoXpress.`}</TypingAnimation>
+      <TypingAnimation className="text-center mt-3 text-4xl font-semibold px-5">{`¡Hola! Bienvenido a IngresoXpress.`}</TypingAnimation>
       <BentoGrid className="py-8 px-5">
         {features.map((feature, idx) => (
           <BentoCard key={idx} {...feature} />

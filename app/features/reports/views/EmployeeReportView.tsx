@@ -15,7 +15,9 @@ import {
 import { EmployeePDF } from './EmployeePDF'
 import { toast } from 'sonner'
 
-const columns: ColumnDef<EmployeeReport>[] = [
+type ExtendedEmployeeReport = EmployeeReport & { date: string }
+
+const columns: ColumnDef<ExtendedEmployeeReport>[] = [
   {
     accessorKey: 'date',
     header: ({ column }) => (
@@ -73,7 +75,7 @@ const EmployeeReportView = ({
   employeeReportEntries,
   ...props
 }: EmployeeReportViewProps & ComponentProps<'div'>) => {
-  const flatData = Object.entries(employeeReportEntries).flatMap(
+  const flatData: ExtendedEmployeeReport[] = Object.entries(employeeReportEntries).flatMap(
     ([date, reports]) =>
       reports.map((report) => ({
         ...report,
