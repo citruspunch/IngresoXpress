@@ -11,8 +11,6 @@ export enum DepartmentsAction {
   delete,
 }
 
-type a = Pick<Tables<'department'>, 'id'>['id']
-
 export type DepartmentFormData =
   | ({
       action: DepartmentsAction.create

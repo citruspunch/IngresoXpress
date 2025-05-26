@@ -13,6 +13,7 @@ import { PreventFlashOnWrongTheme, ThemeProvider, useTheme } from 'remix-themes'
 import { Toaster } from 'sonner'
 import type { Route } from './+types/root'
 import './app.css'
+import SidebarMenu from './components/SidebarMenu'
 import { themeSessionResolver } from './sessions.server'
 
 export const links: Route.LinksFunction = () => [
@@ -75,7 +76,11 @@ const _Layout = ({ children }: { children: React.ReactNode }) => {
 }
 
 export default function App() {
-  return <Outlet />
+  return (
+    <SidebarMenu>
+      <Outlet />
+    </SidebarMenu>
+  )
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {

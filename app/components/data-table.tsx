@@ -10,6 +10,7 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 
+import NumberFlow from '@number-flow/react'
 import { type ReactNode, useState } from 'react'
 import {
   Table,
@@ -75,9 +76,10 @@ export function DataTable<TData, TValue>({
           }
           className="max-w-sm"
         />)}
-        {selectionActive && (<div className="text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} de{' '}
-          {table.getFilteredRowModel().rows.length} columna(s) seleccionada(s)
+        {selectionActive && (<div className="text-sm text-muted-foreground flex items-center gap-1">
+          <NumberFlow value={table.getFilteredSelectedRowModel().rows.length} />{' '}
+          de {table.getFilteredRowModel().rows.length} columna(s)
+          seleccionada(s)
         </div>)}
       </div>
       <div className="rounded-md border overflow-auto">
