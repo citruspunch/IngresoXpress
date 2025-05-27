@@ -84,8 +84,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       const checkInDate = checkInEntry.created_at
       const checkOutDate = checkOutEntry.created_at
 
-      const checkInHour = checkInDate.split('T')[1].split('+')[0]
-      const checkOutHour = checkOutDate.split('T')[1].split('+')[0]
+      const checkInHour = (checkInDate.split('T')[1].split('+')[0]).split('.')[0]
+      const checkOutHour = (checkOutDate.split('T')[1].split('+')[0]).split('.')[0]
 
       // Convertir las fechas a milisegundos
       const checkInTime = new Date(checkInDate).getTime()
@@ -127,9 +127,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         early_check_out,
         total_work_time,
         permissions: passPermissions ? passPermissions : '-',
-        reason: passPermissionsReason
-          ? passPermissionsReason
-          : 'El motivo de este permiso no está disponible, por favor contacta al administrador, si es necesario.',
+        reason: passPermissionsReason ? passPermissionsReason : '-',
         observations: '',
       })
     } else if (checkInEntry && !checkOutEntry) {
@@ -137,7 +135,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       const checkInDate = checkInEntry.created_at
       const checkInTime = new Date(checkInDate).getTime()
 
-      const checkInHour = checkInDate.split('T')[1].split('+')[0]
+      const checkInHour = (checkInDate.split('T')[1].split('+')[0]).split('.')[0]
 
       // Calcular late_check_in
       const workScheduleCheckInTime = convertToTime(
@@ -156,15 +154,15 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         late_check_in,
         early_check_out: '',
         total_work_time: date === todayDate ? '' : '*',
-        permissions: passPermissions,
-        reason: passPermissionsReason,
+        permissions: passPermissions ? passPermissions : '-',
+        reason: passPermissionsReason ? passPermissionsReason : '-',
         observations:
           date === todayDate ? 'No ha marcado salida' : 'No marcó salida',
       })
     } else if (!checkInEntry && checkOutEntry) {
       // Si solo hay check-out, agregarlo a la lista
       const checkOutDate = checkOutEntry.created_at
-      const checkOutHour = checkOutDate.split('T')[1].split('+')[0]
+      const checkOutHour = (checkOutDate.split('T')[1].split('+')[0]).split('.')[0]
       const checkOutTime = new Date(checkOutDate).getTime()
       const workScheduleCheckOutTime = convertToTime(
         checkOutDate,
@@ -181,8 +179,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         late_check_in: '',
         early_check_out,
         total_work_time: '*',
-        permissions: passPermissions,
-        reason: passPermissionsReason,
+        permissions: passPermissions ? passPermissions : '-',
+        reason: passPermissionsReason ? passPermissionsReason : '-',
         observations: 'No marcó entrada',
       })
     } else {
