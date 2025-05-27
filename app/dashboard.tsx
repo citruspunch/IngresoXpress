@@ -54,7 +54,7 @@ const features = [
     name: 'Reportes de Asistencia',
     description: 'Genera y descarga reportes detallados de entradas y salidas de empleados en PDF.',
     href: appRoute.reports,
-    cta: 'Ver reportes',
+    cta: 'Generar reporte',
     className: 'col-span-3 lg:col-span-1',
     background: (
       <Marquee
@@ -88,7 +88,7 @@ const features = [
     Icon: BookCheck,
     name: 'Vista de Entradas y Salidas',
     description: 'Consulta todas las marcas de asistencia: hora de marcaje, tipo de marca (entrada/salida) y el empleado que realizó la acción.',
-    href: '#',
+    href: appRoute.entries,
     cta: 'Ver marcajes',
     className: 'col-span-3 lg:col-span-2',
     background: (

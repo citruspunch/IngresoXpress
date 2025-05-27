@@ -7,6 +7,7 @@ export const appRoute = {
   employees: '/employees',
   reports: '/reports',
   workDays: '/work-days',
+  entries: '/entries',
 }
 
 export default [
@@ -18,4 +19,5 @@ export default [
   route(appRoute.reports, 'routes/reports.tsx'),
   route(`${appRoute.reports}/:employee_id/:date_range`, 'routes/employeeReportView.tsx'),
   route(appRoute.workDays, 'routes/workDays.tsx'),
+  route(appRoute.entries, 'routes/entries.tsx'),
 ] satisfies RouteConfig
