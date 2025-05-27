@@ -23,12 +23,25 @@ import {
 import { Button } from './ui/button'
 import { Input } from './ui/input'
 
+// -> Special types for nested properties of [TData]
+type DotPrefix<T extends string> = T extends '' ? '' : `.${T}`
+type DotNestedKeys<T> = (
+  T extends object
+    ? {
+        [K in Exclude<keyof T, symbol>]: `${K}${DotPrefix<DotNestedKeys<T[K]>>}`
+      }[Exclude<keyof T, symbol>]
+    : ''
+) extends infer D
+  ? Extract<D, string>
+  : never
+// <-
+
 type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   columnToFilterBy?: {
     label: string
-    key: keyof TData
+    key: DotNestedKeys<TData>
   }
   selectionActive?: boolean
   children?: (selectedRowsIndexes: number[]) => ReactNode
@@ -73,14 +86,19 @@ export function DataTable<TData, TValue>({
               table
                 .getColumn(columnToFilterBy.key as string)
                 ?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />)}
-        {selectionActive && (<div className="text-sm text-muted-foreground flex items-center gap-1">
-          <NumberFlow value={table.getFilteredSelectedRowModel().rows.length} />{' '}
-          de {table.getFilteredRowModel().rows.length} columna(s)
-          seleccionada(s)
-        </div>)}
+            }
+            className="max-w-sm"
+          />
+        )}
+        {selectionActive && (
+          <div className="text-sm text-muted-foreground flex items-center gap-1">
+            <NumberFlow
+              value={table.getFilteredSelectedRowModel().rows.length}
+            />{' '}
+            de {table.getFilteredRowModel().rows.length} columna(s)
+            seleccionada(s)
+          </div>
+        )}
       </div>
       <div className="rounded-md border overflow-auto">
         <Table>
