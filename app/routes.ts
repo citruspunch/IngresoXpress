@@ -17,7 +17,10 @@ export default [
   route(appRoute.permissions, 'routes/permissions.tsx'),
   route(appRoute.employees, 'routes/employees.tsx'),
   route(appRoute.reports, 'routes/reports.tsx'),
-  route(`${appRoute.reports}/:employee_id/:date_range`, 'routes/employeeReportView.tsx'),
+  route(
+    `${appRoute.reports}/:employee_id/:date_range`,
+    'routes/employeeReportView.tsx'
+  ),
   route(appRoute.workDays, 'routes/workDays.tsx'),
   route(appRoute.entries, 'routes/entries.tsx'),
 ] satisfies RouteConfig
