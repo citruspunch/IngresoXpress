@@ -14,6 +14,8 @@ import {
   type employeeReportHeader,
 } from '~/lib/utils'
 import { EmployeePDF } from './EmployeePDF'
+import { useNavigate } from 'react-router'
+import { appRoute } from '~/routes'
 
 type ExtendedEmployeeReport = EmployeeReport & { date: string }
 
@@ -105,6 +107,8 @@ const EmployeeReportView = ({
     setIsClient(true)
   }, [])
 
+  const navigate = useNavigate()
+
   return (
     <div className="max-w-5xl mx-auto space-y-8" {...props}>
       <div className="flex justify-between items-end">
@@ -123,39 +127,49 @@ const EmployeeReportView = ({
             <span>Dias Laborales: {workingDays}</span>
           </div>
         </div>
-        {isClient && (
-          <PDFDownloadLink
-            document={
-              <EmployeePDF
-                data={flatData}
-                employeeName={employeeHeader.employee_name}
-                employeeId={employeeHeader.employee_id}
-                workDay={workDayFormat}
-                workingDays={workingDays}
-                dateRange={`Del ${fromDate} al ${toDate}`}
-                department={employeeHeader.department}
-                departmentId={employeeHeader.department_id}
-              />
-            }
-            fileName={`reporte_${employeeHeader.employee_name}.pdf`}
+        <div className="flex flex-col items-end gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate(appRoute.reports)}
+            className="flex items-center gap-2"
           >
-            {({ loading }) =>
-              loading ? (
-                <Button variant="outline" disabled>
-                  Generando PDF...
-                </Button>
-              ) : (
-                <Button
-                  variant="outline"
-                  onClick={() => toast.success('PDF generado')}
-                >
-                  <FileDown className="mr-2" />
-                  Descargar PDF
-                </Button>
-              )
-            }
-          </PDFDownloadLink>
-        )}
+            <Repeat2 className="w-4 h-4" />
+            Generar otro reporte
+          </Button>
+          {isClient && (
+            <PDFDownloadLink
+              document={
+                <EmployeePDF
+                  data={flatData}
+                  employeeName={employeeHeader.employee_name}
+                  employeeId={employeeHeader.employee_id}
+                  workDay={workDayFormat}
+                  workingDays={workingDays}
+                  dateRange={`Del ${fromDate} al ${toDate}`}
+                  department={employeeHeader.department}
+                  departmentId={employeeHeader.department_id}
+                />
+              }
+              fileName={`reporte_${employeeHeader.employee_name}.pdf`}
+            >
+              {({ loading }) =>
+                loading ? (
+                  <Button variant="outline" disabled>
+                    Generando PDF...
+                  </Button>
+                ) : (
+                  <Button
+                    variant="outline"
+                    onClick={() => toast.success('PDF generado')}
+                  >
+                    <FileDown className="mr-2" />
+                    Descargar PDF
+                  </Button>
+                )
+              }
+            </PDFDownloadLink>
+          )}
+        </div>
       </div>
       <DataTable data={flatData} columns={columns} selectionActive={false} />
     </div>
