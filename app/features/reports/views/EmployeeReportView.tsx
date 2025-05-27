@@ -4,7 +4,8 @@ import { SortVertical } from '@solar-icons/react/ssr'
 import type { ColumnDef } from '@tanstack/react-table'
 import { FileDown, Repeat2 } from 'lucide-react'
 import type { ComponentProps } from 'react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { DataTable } from '~/components/data-table'
 import { Button } from '~/components/ui/button'
 import {
@@ -13,7 +14,6 @@ import {
   type employeeReportHeader,
 } from '~/lib/utils'
 import { EmployeePDF } from './EmployeePDF'
-import { toast } from 'sonner'
 
 type ExtendedEmployeeReport = EmployeeReport & { date: string }
 
@@ -57,7 +57,6 @@ const columns: ColumnDef<ExtendedEmployeeReport>[] = [
   {
     accessorKey: 'permissions',
     header: 'Permisos',
-    
   },
   {
     accessorKey: 'reason',
@@ -75,12 +74,13 @@ const EmployeeReportView = ({
   employeeReportEntries,
   ...props
 }: EmployeeReportViewProps & ComponentProps<'div'>) => {
-  const flatData: ExtendedEmployeeReport[] = Object.entries(employeeReportEntries).flatMap(
-    ([date, reports]) =>
-      reports.map((report) => ({
-        ...report,
-        date: format(date, 'long', 'es'),
-      }))
+  const flatData: ExtendedEmployeeReport[] = Object.entries(
+    employeeReportEntries
+  ).flatMap(([date, reports]) =>
+    reports.map((report) => ({
+      ...report,
+      date: format(date, 'long', 'es'),
+    }))
   )
   const fromDate = format(employeeHeader.from, 'long', 'es')
   const toDate = format(employeeHeader.to, 'long', 'es')
@@ -110,21 +110,18 @@ const EmployeeReportView = ({
       <div className="flex justify-between items-end">
         <div className="space-y-4">
           <Repeat2 size={40} />
-          <h2 className="font-bold text-4xl mb-3">
+          <h2 className="font-bold text-5xl mb-5 tracking-tighter">
             Reportes Entradas y Salidas
           </h2>
           <h3 className="text-xl font-semibold">
             Del {fromDate} al {toDate}
           </h3>
-          <p className="text-muted-foreground">
-            {`Empleado: ${employeeHeader.employee_name}`}
-            <br />
-            {`Departamento: ${employeeHeader.department}`}
-            <br />
-            {`Jornada Laboral: ${workDayFormat}`}
-            <br />
-            {`Dias Laborales: ${workingDays}`}
-          </p>
+          <div className="text-muted-foreground flex flex-col gap-1">
+            <span>Empleado: {employeeHeader.employee_name}</span>
+            <span>Departamento: {employeeHeader.department}</span>
+            <span>Jornada Laboral: {workDayFormat}</span>
+            <span>Dias Laborales: {workingDays}</span>
+          </div>
         </div>
         {isClient && (
           <PDFDownloadLink
@@ -148,7 +145,10 @@ const EmployeeReportView = ({
                   Generando PDF...
                 </Button>
               ) : (
-                <Button variant="outline" onClick={() => toast.success('PDF generado')}>
+                <Button
+                  variant="outline"
+                  onClick={() => toast.success('PDF generado')}
+                >
                   <FileDown className="mr-2" />
                   Descargar PDF
                 </Button>

@@ -1,12 +1,12 @@
 import { CalendarIcon, FileTextIcon } from '@radix-ui/react-icons'
-import { Marquee } from 'components/magicui/marquee'
-import { BookCheck, Share2Icon } from 'lucide-react'
-import { Calendar } from './components/ui/calendar'
-import { BentoCard, BentoGrid } from 'components/magicui/bento-grid'
 import AnimatedBeamMultipleOutput from 'components/magicui/AnimatedBeam'
 import { AnimatedListNotification } from 'components/magicui/AnimatedList'
-import { cn } from './lib/utils'
+import { BentoCard, BentoGrid } from 'components/magicui/bento-grid'
+import { Marquee } from 'components/magicui/marquee'
 import { TypingAnimation } from 'components/magicui/typing-animation'
+import { BookCheck, Share2Icon } from 'lucide-react'
+import { Calendar } from './components/ui/calendar'
+import { cn } from './lib/utils'
 import { appRoute } from './routes'
 
 const pdfColumns = [
@@ -52,7 +52,8 @@ const features = [
   {
     Icon: FileTextIcon,
     name: 'Reportes de Asistencia',
-    description: 'Genera y descarga reportes detallados de entradas y salidas de empleados en PDF.',
+    description:
+      'Genera y descarga reportes detallados de entradas y salidas de empleados en PDF.',
     href: appRoute.reports,
     cta: 'Generar reporte',
     className: 'col-span-3 lg:col-span-1',
@@ -84,10 +85,11 @@ const features = [
       </Marquee>
     ),
   },
-   {
+  {
     Icon: BookCheck,
     name: 'Vista de Entradas y Salidas',
-    description: 'Consulta todas las marcas de asistencia: hora de marcaje, tipo de marca (entrada/salida) y el empleado que realizó la acción.',
+    description:
+      'Consulta todas las marcas de asistencia: hora de marcaje, tipo de marca (entrada/salida) y el empleado que realizó la acción.',
     href: appRoute.entries,
     cta: 'Ver marcajes',
     className: 'col-span-3 lg:col-span-2',
@@ -98,7 +100,8 @@ const features = [
   {
     Icon: Share2Icon,
     name: 'Integración con Departamentos',
-    description: 'Gestiona empleados y permisos por departamento para un control más eficiente.',
+    description:
+      'Gestiona empleados y permisos por departamento para un control más eficiente.',
     href: appRoute.departments,
     cta: 'Ver departamentos',
     className: 'col-span-3 lg:col-span-2',
@@ -109,7 +112,8 @@ const features = [
   {
     Icon: CalendarIcon,
     name: 'Permisos de Asistencia',
-    description: 'Añade y gestiona permisos de asistencia para fechas específicas de manera sencilla.',
+    description:
+      'Añade y gestiona permisos de asistencia para fechas específicas de manera sencilla.',
     className: 'col-span-3 lg:col-span-1',
     href: appRoute.permissions,
     cta: 'Añadir permiso',
