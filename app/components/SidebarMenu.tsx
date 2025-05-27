@@ -3,6 +3,7 @@ import { useState } from 'react'
 import {
   BookText,
   CalendarClock,
+  ClockFading,
   LayoutDashboard,
   UserRoundCheck,
   UsersRound,
@@ -11,6 +12,8 @@ import { motion } from 'motion/react'
 import { cn } from '~/lib/utils'
 import { Sidebar, SidebarBody, SidebarItem, SidebarLink } from './ui/sidebar'
 import { appRoute } from '~/routes'
+import ModeToggle from './mode-toggle'
+import { Buildings } from '@solar-icons/react/ssr'
 
 export function SidebarMenu({ children }: { children: React.ReactNode }) {
   const links = [
@@ -22,10 +25,24 @@ export function SidebarMenu({ children }: { children: React.ReactNode }) {
       ),
     },
     {
+      label: 'Entradas y Salidas',
+      href: appRoute.entries,
+      icon: (
+        <ClockFading className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
+      label: 'Empleados',
+      href: appRoute.employees,
+      icon: (
+        <UsersRound className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+      ),
+    },
+    {
       label: 'Departamentos',
       href: appRoute.departments,
       icon: (
-        <UsersRound className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
+        <Buildings className="h-5 w-5 shrink-0 text-neutral-700 dark:text-neutral-200" />
       ),
     },
     {
@@ -68,7 +85,12 @@ export function SidebarMenu({ children }: { children: React.ReactNode }) {
               ))}
             </div>
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
+            <SidebarItem
+              icon={<ModeToggle />}
+              label="Cambiar modo"
+              className='h-12 w-12 shrink-0'
+            />
             <SidebarItem
               icon={
                 <img
