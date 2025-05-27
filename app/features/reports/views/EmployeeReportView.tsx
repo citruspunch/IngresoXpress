@@ -109,6 +109,8 @@ const EmployeeReportView = ({
 
   const navigate = useNavigate()
 
+  const [isGeneratingPDF, setIsGeneratingPDF] = useState(false)
+
   return (
     <div className="max-w-5xl mx-auto space-y-8" {...props}>
       <div className="flex justify-between items-end">
@@ -127,15 +129,7 @@ const EmployeeReportView = ({
             <span>Dias Laborales: {workingDays}</span>
           </div>
         </div>
-        <div className="flex flex-col items-end gap-2">
-          <Button
-            variant="outline"
-            onClick={() => navigate(appRoute.reports)}
-            className="flex items-center gap-2"
-          >
-            <Repeat2 className="w-4 h-4" />
-            Generar otro reporte
-          </Button>
+        <div className="flex flex-row items-end gap-2">
           {isClient && (
             <PDFDownloadLink
               document={
@@ -153,14 +147,18 @@ const EmployeeReportView = ({
               fileName={`reporte_${employeeHeader.employee_name}.pdf`}
             >
               {({ loading }) =>
-                loading ? (
+                loading && isGeneratingPDF ? (
                   <Button variant="outline" disabled>
                     Generando PDF...
                   </Button>
                 ) : (
                   <Button
-                    variant="outline"
-                    onClick={() => toast.success('PDF generado')}
+                    variant="default"
+                    onClick={() => {
+                      setIsGeneratingPDF(true)
+                      toast.success('PDF generado')
+                      setTimeout(() => setIsGeneratingPDF(false), 500)
+                    }}
                   >
                     <FileDown className="mr-2" />
                     Descargar PDF
@@ -169,6 +167,14 @@ const EmployeeReportView = ({
               }
             </PDFDownloadLink>
           )}
+          <Button
+            variant="outline"
+            onClick={() => navigate(appRoute.reports)}
+            className="flex items-center gap-2"
+          >
+            <Repeat2 className="w-4 h-4" />
+            Generar otro reporte
+          </Button>
         </div>
       </div>
       <DataTable data={flatData} columns={columns} selectionActive={false} />
