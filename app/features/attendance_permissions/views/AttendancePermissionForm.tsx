@@ -41,7 +41,7 @@ import { PassType } from '~/lib/passTypes'
 import { cn } from '~/lib/utils'
 import attendanceFormSchema from '../schemas/AttendanceSchema'
 
-import React from 'react'
+import React, { useState } from 'react'
 import { useFetcher } from 'react-router'
 import Loader from '~/components/loader'
 import {
@@ -75,8 +75,8 @@ const AttendancePermissionForm = ({
   employees,
 }: AttendancePermissionViewProps) => {
   const fetcher = useFetcher()
-  const [showConfirmation, setShowConfirmation] = React.useState(false)
-  const [currentValues, setCurrentValues] = React.useState<z.infer<
+  const [showConfirmation, setShowConfirmation] = useState(false)
+  const [currentValues, setCurrentValues] = useState<z.infer<
     typeof attendanceFormSchema
   > | null>(null)
 
@@ -90,16 +90,13 @@ const AttendancePermissionForm = ({
     },
   })
 
-  
-
-  const checkAbsencePermission = async (employeeId: string, date: string) => {
+  const checkPermission = async (employeeId: string, date: string) => {
     const supabase = createClient()
     const { error } = await supabase
       .from('pass')
       .select('*')
       .eq('employee', employeeId)
       .eq('date', date)
-      .eq('type', PassType.Absence)
       .single()
     if (error) return false
     return true
@@ -121,15 +118,15 @@ const AttendancePermissionForm = ({
         }
       )
     }
-    setShowConfirmation(false) 
+    setShowConfirmation(false)
   }
 
   const handleCancel = () => {
-    setShowConfirmation(false) 
+    setShowConfirmation(false)
   }
 
   const onSubmit = async (values: z.infer<typeof attendanceFormSchema>) => {
-    const isPermissionActive = await checkAbsencePermission(
+    const isPermissionActive = await checkPermission(
       values.employee_id,
       values.date.toISOString()
     )
@@ -144,7 +141,7 @@ const AttendancePermissionForm = ({
         date: values.date.toISOString(),
         reason: values.reason,
         type: values.type,
-        action: 'create', 
+        action: 'create',
       } satisfies AttendancePermissionFormData,
       {
         method: 'post',
@@ -154,10 +151,10 @@ const AttendancePermissionForm = ({
   }
 
   return (
-    <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
+    <div className="flex min-h-[60vh] h-full w-full items-center mb-8 justify-center px-4">
       {showConfirmation && (
         <ConfirmationDialog
-          title="Ya existe un permiso de ausencia"
+          title="Ya existe un permiso para este empleado en esta fecha"
           description="Si haces click en continuar, el permiso se sobreescribirá"
           actionLabel="Continuar"
           onCancel={handleCancel}
