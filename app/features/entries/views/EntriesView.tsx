@@ -18,21 +18,7 @@ const EntriesView = ({ entries, ...props }: Props) => {
 
   const fetcher = useFetcher()
 
-  useEffect(() => {
-    const channel = createClient()
-      .channel('custom-all-channel')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'entry' },
-        (_) => fetcher.submit({}, { method: 'post' })
-      )
-      .subscribe()
-    return () => {
-      channel.unsubscribe()
-    }
-  }, [])
-
-  useEffect(() => {
+  const filterEntries = () => {
     if (startDate === undefined || endDate === undefined) {
       setFilteredEntries(entries)
       return
@@ -46,7 +32,25 @@ const EntriesView = ({ entries, ...props }: Props) => {
     })
     _entries.forEach(console.log)
     setFilteredEntries(_entries)
-  }, [startDate, endDate])
+  }
+
+  useEffect(() => {
+    createClient()
+      .channel('custom-all-channel')
+      .on(
+        'postgres_changes',
+        { event: '*', schema: 'public', table: 'entry' },
+        async (_) => {
+          console.log('hi')
+          await fetcher.submit({}, { method: 'post' })
+        }
+      )
+      .subscribe()
+  }, [])
+
+  useEffect(() => {
+    filterEntries()
+  }, [startDate, endDate, entries])
 
   return (
     <div
