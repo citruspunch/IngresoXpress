@@ -249,8 +249,8 @@ const AttendancePermissionForm = ({
                                             >
                                               {employee.name[0].toUpperCase()}
                                             </Square>
-                                            <span className="truncate">
-                                              {employee.name}
+                                            <span>
+                                              {employee.name}  ({employee.id.substring(0, 6)})
                                             </span>
                                             <Check
                                               className={cn(
