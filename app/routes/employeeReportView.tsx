@@ -12,6 +12,7 @@ import {
   type employeeReportHeader,
 } from '~/lib/utils'
 import { toast } from 'sonner'
+import { parse } from '@formkit/tempo'
 
 export const loader = async ({ params, request }: Route.LoaderArgs) => {
   const { supabase } = createClient(request)
@@ -84,8 +85,8 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
       const checkInDate = checkInEntry.created_at
       const checkOutDate = checkOutEntry.created_at
 
-      const checkInHour = (checkInDate.split('T')[1].split('+')[0]).split('.')[0]
-      const checkOutHour = (checkOutDate.split('T')[1].split('+')[0]).split('.')[0]
+      const checkInHour = parse(checkInDate).toLocaleTimeString()
+      const checkOutHour = parse(checkOutDate).toLocaleTimeString()
 
       // Convertir las fechas a milisegundos
       const checkInTime = new Date(checkInDate).getTime()
@@ -128,14 +129,14 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
         total_work_time,
         permissions: passPermissions ? passPermissions : '-',
         reason: passPermissionsReason ? passPermissionsReason : '-',
-        observations: '',
+        observations: '-',
       })
     } else if (checkInEntry && !checkOutEntry) {
       // Si solo hay check-in, agregarlo a la lista
       const checkInDate = checkInEntry.created_at
       const checkInTime = new Date(checkInDate).getTime()
 
-      const checkInHour = (checkInDate.split('T')[1].split('+')[0]).split('.')[0]
+      const checkInHour = (parse(checkInDate).toLocaleTimeString())
 
       // Calcular late_check_in
       const workScheduleCheckInTime = convertToTime(
@@ -162,7 +163,7 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     } else if (!checkInEntry && checkOutEntry) {
       // Si solo hay check-out, agregarlo a la lista
       const checkOutDate = checkOutEntry.created_at
-      const checkOutHour = (checkOutDate.split('T')[1].split('+')[0]).split('.')[0]
+      const checkOutHour = (parse(checkOutDate).toLocaleTimeString())
       const checkOutTime = new Date(checkOutDate).getTime()
       const workScheduleCheckOutTime = convertToTime(
         checkOutDate,
