@@ -1,6 +1,5 @@
 import { redirect } from 'react-router'
 import { toast } from 'sonner'
-import SidebarMenu from '~/components/SidebarMenu'
 import type { AttendancePermissionFormData } from '~/features/attendance_permissions/views/AttendancePermissionForm'
 import AttendancePermissionView from '~/features/attendance_permissions/views/AttendancePermissionView'
 import { createClient } from '~/lib/supabase/server'
@@ -17,17 +16,16 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const { date, employee, reason, type, action }: AttendancePermissionFormData =
     await request.clone().json()
   switch (action) {
-    case 'create':
-      {
-        const { error } = await supabase.from('pass').insert({
-          date: date,
-          employee: employee,
-          type: type,
-          reason: reason,
-        })
-        if (error !== null) console.error(error)
-        return error === null
-      }
+    case 'create': {
+      const { error } = await supabase.from('pass').insert({
+        date: date,
+        employee: employee,
+        type: type,
+        reason: reason,
+      })
+      if (error !== null) console.error(error)
+      return error === null
+    }
     case 'update': {
       const { error } = await supabase.from('pass').update({
         date: date,
@@ -56,9 +54,7 @@ export const clientAction = async ({
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <SidebarMenu>
-    <AttendancePermissionView employees={loaderData!} />
-  </SidebarMenu>
+  <AttendancePermissionView employees={loaderData!} />
 )
 
 export default Component

@@ -1,10 +1,5 @@
-import SidebarMenu from "~/components/SidebarMenu";
-import { Dashboard } from "~/dashboard";
+import { Dashboard } from '~/dashboard'
 
-const Component = () => (
-    <SidebarMenu>
-        <Dashboard />
-    </SidebarMenu>
-)
+const Component = () => <Dashboard />
 
 export default Component

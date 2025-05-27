@@ -1,10 +1,11 @@
 import NumberFlow from '@number-flow/react'
-import { AddCircle, UserHands } from '@solar-icons/react/ssr'
+import { AddCircle } from '@solar-icons/react/ssr'
 import { useEffect, useState, type ComponentProps } from 'react'
 import { Button } from '~/components/ui/button'
 import type { Tables } from '~/lib/supabase/types'
 import EmployeeFormView from './EmployeeFormView'
 import EmployeesTableView from './EmployeesTableView'
+import { UsersRound } from 'lucide-react'
 
 type Props = {
   employees: Tables<'employee'>[]
@@ -26,12 +27,12 @@ const EmployeesView = ({
 
   return (
     <div
-      className="w-3xl mx-auto space-y-8 flex flex-col min-h-full"
+      className="max-w-5xl mx-auto space-y-8 flex flex-col min-h-full"
       {...props}
     >
       <div className="flex justify-between items-end">
         <div className="space-y-4">
-          <UserHands size={40} />
+          <UsersRound size={40} />
           <h2 className="font-bold text-5xl tracking-tighter flex items-center gap-3">
             Empleados
             <NumberFlow value={employeesCount} prefix="(" suffix=")" />

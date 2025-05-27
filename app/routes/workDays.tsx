@@ -1,4 +1,3 @@
-import SidebarMenu from '~/components/SidebarMenu'
 import { createClient } from '~/lib/supabase/server'
 import WorkDaysTableView from '~/features/work_days/views/WorkDaysTableView'
 import type { Route } from './+types/workDays'
@@ -92,7 +91,7 @@ export const clientAction = async ({
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <SidebarMenu>
+  <>
     {loaderData && loaderData.length > 0 ? (
       <WorkDaysTableView workDays={loaderData} />
     ) : (
@@ -108,7 +107,7 @@ const Component = ({ loaderData }: Route.ComponentProps) => (
         }}
       />
     )}
-  </SidebarMenu>
+  </>
 )
 
 export default Component

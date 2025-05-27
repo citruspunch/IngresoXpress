@@ -1,6 +1,5 @@
 import { createClient } from '~/lib/supabase/server'
 import type { Route } from './+types/employeeReportView'
-import SidebarMenu from '~/components/SidebarMenu'
 import EmployeeReportView from '~/features/reports/views/EmployeeReportView'
 import { redirect } from 'react-router'
 import { appRoute } from '~/routes'
@@ -53,8 +52,6 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
     to: parsedDateRange.to,
     work_day: data[0].employee.work_day,
   }
-
-  
 
   const employeeWorkEntries = groupByDate(data)
 
@@ -204,7 +201,9 @@ export const loader = async ({ params, request }: Route.LoaderArgs) => {
   return { employeeReportEntries, employeeHeader }
 }
 
-export const clientLoader = async ({ serverLoader }: Route.ClientLoaderArgs) => {
+export const clientLoader = async ({
+  serverLoader,
+}: Route.ClientLoaderArgs) => {
   const serverData = await serverLoader()
   if (serverData.error) {
     toast.error(serverData.error)
@@ -215,12 +214,10 @@ export const clientLoader = async ({ serverLoader }: Route.ClientLoaderArgs) => 
 
 const Component = ({ loaderData }: Route.ComponentProps) => {
   return (
-    <SidebarMenu>
-      <EmployeeReportView
-        employeeHeader={loaderData.employeeHeader}
-        employeeReportEntries={loaderData.employeeReportEntries}
-      />
-    </SidebarMenu>
+    <EmployeeReportView
+      employeeHeader={loaderData.employeeHeader}
+      employeeReportEntries={loaderData.employeeReportEntries}
+    />
   )
 }
 

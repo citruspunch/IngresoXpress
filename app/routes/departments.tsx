@@ -1,5 +1,4 @@
 import { toast } from 'sonner'
-import SidebarMenu from '~/components/SidebarMenu'
 import DepartmentsView from '~/features/departments/views/DepartmentsView'
 import { createClient } from '~/lib/supabase/server'
 import type { Tables } from '~/lib/supabase/types'
@@ -83,9 +82,7 @@ export const clientAction = async ({
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <SidebarMenu>
-    <DepartmentsView departments={loaderData} />
-  </SidebarMenu>
+  <DepartmentsView departments={loaderData} />
 )
 
 export default Component

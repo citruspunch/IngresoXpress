@@ -169,7 +169,7 @@ const WorkDaysTableView = ({
       <div className="flex justify-between items-end">
         <div className="space-y-4">
           <Clock size={40} />
-          <h2 className="font-bold text-4xl">Jornadas Laborales</h2>
+          <h2 className="font-bold text-5xl tracking-tighter">Jornadas Laborales</h2>
         </div>
         <WorkDayFormView>
           <Button variant="outline">

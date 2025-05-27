@@ -71,10 +71,10 @@ const AttendanceReportInput = ({
   }
 
   return (
-    <div className="flex min-h-[60vh] h-full w-full items-center justify-center px-4">
-      <Card className="mx-auto max-w-md  w-[500px]">
+    <div className="flex min-h-[60vh] h-full w-full items-center justify-center mb-20 px-4">
+      <Card className="mx-auto max-w-md w-[500px]">
         <CardHeader>
-          <CardTitle className="text-3xl">Reportes Entrada y Salida</CardTitle>
+          <CardTitle className="text-3xl">Generar Reporte</CardTitle>
           <CardDescription>
             Genera un reporte de entradas y salidas de un empleado en un rango
             de fechas.
@@ -246,7 +246,11 @@ const AttendanceReportInput = ({
                   )}
                 />
 
-                <Button type="submit" className="w-full mt-2" disabled={isLoading}>
+                <Button
+                  type="submit"
+                  className="w-full mt-2"
+                  disabled={isLoading}
+                >
                   {isLoading ? <Loader /> : 'Generar Reporte'}
                 </Button>
               </div>

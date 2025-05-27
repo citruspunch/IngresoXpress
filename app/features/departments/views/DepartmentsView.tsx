@@ -17,7 +17,7 @@ const DepartmentsView = ({
     <div className="flex justify-between items-end">
       <div className="space-y-4">
         <Buildings size={40} />
-        <h2 className="font-bold text-4xl">Departamentos</h2>
+        <h2 className="font-bold text-5xl tracking-tighter">Departamentos</h2>
       </div>
       <DepartmentFormView>
         <Button variant="outline">
