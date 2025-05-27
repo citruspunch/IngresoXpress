@@ -1,4 +1,3 @@
-import SidebarMenu from '~/components/SidebarMenu'
 import type { Route } from './+types/reports'
 import AttendanceReportInput from '~/features/reports/views/AttendanceReportInput'
 import { fetchEmployeesWithDepartments } from '~/lib/utils'
@@ -9,11 +8,15 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
 }
 
 const Component = ({ loaderData }: Route.ComponentProps) => (
-  <SidebarMenu>
-    <h2 className="font-bold text-3xl mb-1">Reportes de Asistencia</h2>
+  <div
+    className="w-5xl mt-5 mx-auto space-y-8 flex flex-col min-h-full"
+  >
+    <div className="flex justify-between items-end">
+      <h2 className="font-bold text-5xl tracking-tighter">Reportes de Asistencia</h2>
+    </div>
     <Separator className="mb-1" />
     <AttendanceReportInput employees={loaderData!} />
-  </SidebarMenu>
+  </div>
 )
 
 export default Component
