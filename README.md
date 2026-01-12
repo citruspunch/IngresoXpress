@@ -1,94 +1,67 @@
 # IngresoXpress
 
-IngresoXpress es una aplicación diseñada para gestionar jornadas laborales, empleados, permisos de asistencia y reportes de entradas y salidas. Este sistema permite a las empresas llevar un control eficiente de los horarios de trabajo y la asistencia de sus empleados.
+Proyecto web de panel administrativo orientado a la gestión ágil de ingresos y asistencia (personal / visitantes). IngresoXpress ofrece una interfaz liviana y modular para administrar departamentos, permisos de asistencia y vistas de control, pensada para despliegues rápidos con Vite y contenedores Docker.
 
-## Tecnologías Utilizadas
+## Propósito y funcionalidad
 
-El proyecto utiliza las siguientes tecnologías:
+IngresoXpress está diseñado como un dashboard administrativo para gestionar y visualizar registros de ingreso/entrada y la estructura organizacional asociada (departamentos, permisos de asistencia, etc.). Sus objetivos principales son:
 
-- **Desarrollo**
-  - **TypeScript**: Lenguaje de programación tipado para JavaScript.
-  - **Vite**: Herramienta de construcción rápida para proyectos web.
-  - **pnpm**: Gestor de paquetes rápido y eficiente.
-  
-- **Frontend**:
-  - **React**: Biblioteca para construir interfaces de usuario.
-  - **React Hook Form**: Manejo de formularios con validación.
-  - **Zod**: Validación de esquemas de datos.
-  - **TailwindCSS**: Framework de estilos CSS para diseño responsivo.
-  - **ShadCN**: Componentes accesibles y personalizables.
-  - **Lucide Icons**: Iconos modernos y personalizables.
+- Registrar y consultar eventos de ingreso/ asistencia de usuarios.
+- Organizar y administrar departamentos y permisos relacionados con la asistencia.
+- Ofrecer vistas de tablero (dashboard) y listados tabulares con componentes reutilizables.
 
-- **Backend**:
-  - **Supabase**: Soporte para renderizado del lado del servidor con Supabase. Base de datos basada en PostgreSQL.
-  - **React Router**: Manejo de rutas en la aplicación.
+Aunque el repositorio contiene principalmente la aplicación cliente (React + TypeScript), la estructura es adecuada para integrarse con APIs backend y despliegues en contenedores.
 
-- **Otros**:
-  - **Sonner**: Notificaciones para la interfaz de usuario.
-  - **Date-fns**: Manejo de fechas y horas (ya mencionado).
-  - **@formkit/tempo**: Herramienta para manejar formatos de tiempo.
+## Tecnologías y herramientas principales
 
-- **PDF y Reportes**
-  - **@react-pdf/renderer**: Generación de documentos PDF directamente desde React.
-  - **React PDF Tailwind**: Integración de TailwindCSS con la generación de PDFs.
+- React (con TypeScript) — interfaz de usuario y componentes.
+- Vite — herramienta de bundling y desarrollo rápido.
+- pnpm — gestor de paquetes.
+- React Router — enrutamiento y configuración de rutas (ver `react-router.config.ts` y `app/routes.ts`).
+- Docker — configuración de contenedor (ver `Dockerfile`).
+- Estructura de proyecto modular basada en carpetas por características (feature folders).
 
-## Funcionalidades Principales
+## Arquitectura y componentes centrales
 
-### 1. **Gestión de Jornadas Laborales**
-   - Crear, editar y eliminar jornadas laborales.
-   - Configurar horarios de entrada y salida.
-   - Seleccionar días laborales.
+El proyecto sigue una arquitectura orientada a componentes y a características:
 
-### 2. **Gestión de Empleados**
-   - Registrar nuevos empleados.
-   - Asignar departamentos y jornadas laborales.
-   - Editar y eliminar información de empleados.
+- app/root.tsx — Punto de entrada principal de la aplicación; configura el layout y el proveedor de rutas.
+- app/dashboard.tsx — Vista del tablero principal con resúmenes y componentes clave.
+- app/routes.ts y react-router.config.ts — Definen y organizan las rutas de la aplicación.
+- app/components — Biblioteca de componentes reutilizables de UI; incluye subcomponentes en `app/components/ui` como `sidebar.tsx`, `table.tsx` y `separator.tsx`.
+- app/features — Carpeta para módulos por característica (por ejemplo `departments`, `attendance_permissions`) que agrupan vistas y lógica relacionada.
+- app/lib — Lugar previsto para utilidades y abstracciones compartidas (utils, hooks, adaptadores).
 
-### 3. **Permisos de Asistencia**
-   - Otorgar permisos de ausencia, entrada tarde o salida temprano.
-   - Registrar motivos y fechas específicas para los permisos.
+Esta separación favorece el aislamiento de responsabilidades y permite escalar el código conforme crece el producto.
 
-### 4. **Reportes de Entradas y Salidas**
-   - Generar reportes detallados en formato PDF.
-   - Consultar entradas y salidas de empleados en un rango de fechas.
-   - Visualizar información como horas trabajadas, permisos y observaciones.
+## Patrones de diseño y buenas prácticas
 
-### 5. **Interfaz de Usuario**
-   - Navegación intuitiva con un menú lateral.
-   - Formularios dinámicos con validación en tiempo real.
-   - Notificaciones para confirmar acciones realizadas.
+- Feature-based organization: el código se organiza por dominio/funcionalidad, facilitando la localización y el trabajo en equipos.
+- Component-driven UI: componentes pequeños y reutilizables (UI primitives) como tablas y barras laterales para mantener consistencia y facilitar pruebas.
+- Separation of concerns: la carpeta `components` contiene elementos puramente visuales, mientras que `features` agrupa vistas y lógica de dominio.
+- Static typing: TypeScript aporta seguridad de tipos y documentación implícita en las APIs internas.
+- CI/CD / container readiness: presencia de `Dockerfile` y configuración de Vite facilitan despliegues contenedorizados.
 
-## Manual de Usuario
+## Características y módulos destacados
 
-### **Gestión de Jornadas Laborales**
-1. Ve a la sección "Jornadas Laborales" desde el menú lateral.
-2. Haz clic en "Añadir Jornada Laboral" para crear una nueva jornada.
-3. Completa el formulario con el nombre, horario y días laborales.
-4. Para editar o eliminar una jornada, utiliza las opciones disponibles en la tabla.
+- Sidebar y navegación: `app/components/ui/sidebar.tsx` provee la estructura de navegación y el menú lateral.
+- Componentes de tabla: `app/components/ui/table.tsx` es una implementación reutilizable para listados y tablas.
+- Separadores y utilidades UI: `app/components/ui/separator.tsx` y `app/components/SidebarMenu.tsx` muestran el enfoque en componentes reutilizables y composables.
+- Vistas de dominio dentro de `app/features` (departments, attendance_permissions): diseño pensado para agregar fácilmente CRUD y pantallas de administración.
 
-### **Gestión de Empleados**
-1. Ve a la sección "Empleados" desde el menú lateral.
-2. Haz clic en "Añadir Empleado" para registrar un nuevo empleado.
-3. Completa el formulario con el nombre, departamento y jornada laboral asignada.
-4. Para editar o eliminar un empleado, utiliza las opciones disponibles en la tabla.
+## Aspectos distintivos
 
-### **Permisos de Asistencia**
-1. Ve a la sección "Permisos" desde el menú lateral.
-2. Selecciona un empleado y completa el formulario con la fecha, tipo de permiso y motivo.
-3. Confirma la acción para registrar el permiso.
+- Enfoque en rapidez y ligereza: el uso de Vite y pnpm apunta a tiempos de arranque y builds rápidos, ideal para prototipos y despliegues iterativos.
+- Organización modular por características: facilita mostrar trabajo en un portafolio porque cada módulo refleja una unidad de funcionalidad clara y testeable.
+- Preparado para contenedores: `Dockerfile` incluido para empaquetar la aplicación cliente en entornos de producción.
 
-### **Generación de Reportes**
-1. Ve a la sección "Reportes" desde el menú lateral.
-2. Selecciona un empleado y un rango de fechas.
-3. Haz clic en "Generar Reporte" para visualizar los datos.
-4. Descarga el reporte en formato PDF si es necesario.
+## Estructura del proyecto (quick reference)
 
-### **Gestión de Jornadas Laborales**
-1. Ve a la sección "Jornadas Laborales" desde el menú lateral.
-2. Haz clic en "Añadir" para crear una nueva jornada.
-3. Completa el formulario con el nombre, horario y días laborales.
-4. Para editar o eliminar una jornada, utiliza las opciones disponibles en la tabla.
-
-### **Visualización de Entradas y Salidas**
-1. Ve a la sección "Entradas y Salidas" desde el menú lateral.
-2. Ahi podrás ver un listado de todas las entradas y salidas registradas en tiempo real.
+- /app
+  - /components — Componentes UI reutilizables (sidebar, table, separator)
+  - /features — Módulos por funcionalidad (departments, attendance_permissions, ...)
+  - root.tsx, dashboard.tsx, routes.ts — Entradas y rutas principales
+- /public — Archivos estáticos
+- Dockerfile — Imagen y pasos para contenedor
+- vite.config.ts, tsconfig.json — Configuración de build y TypeScript
+- package.json, pnpm-lock.yaml — Dependencias y lockfile
